@@ -1,4 +1,4 @@
-! namelist for combine3d (same settings as the legacy data_conbine3d_sxt_mem.f90)
+! namelist for combine3d (same settings as the legacy code)
 !   per-rank files: diri//prefix_in//NNN//suffix_in//RRRR  (e.g. ju03nt000.tdata.0000)
 !   output file    : diro//prefix_out//NNN//suffix_out     (e.g. ju03nt000m.data)
 &combine

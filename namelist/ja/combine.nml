@@ -1,4 +1,4 @@
-! combine3d 用 namelist (旧 data_conbine3d_sxt_mem.f90 と同じ設定)
+! combine3d 用 namelist (旧コードと同じ設定)
 !   ランク毎ファイル: diri//prefix_in//NNN//suffix_in//RRRR  (例 ju03nt000.tdata.0000)
 !   出力ファイル    : diro//prefix_out//NNN//suffix_out     (例 ju03nt000m.data)
 &combine

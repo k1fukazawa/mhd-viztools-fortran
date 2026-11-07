@@ -1,4 +1,4 @@
-! bin2hdf 用 namelist : 渦度 2 変数 (旧 hdf_convert_vort と同じ)
+! bin2hdf 用 namelist : 渦度 2 変数 (旧コードと同じ)
 &bin2hdf
   nx2 = 3002, ny2 = 2002, nz2 = 1002, nvar = 2,
   varname = 'ParaVort', 'PerpVort',

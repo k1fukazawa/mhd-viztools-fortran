@@ -2,7 +2,7 @@
 ! scene3d : build a 3-D scene (lines, triangle meshes, textured quads, text) and write it
 !           as binary glTF 2.0 (.glb) and X3D (.x3d)
 !
-!   Successor of the legacy VRML subroutines (zvrsub*.f).
+!   Successor of the legacy VRML subroutines.
 !     linebe/linep/lineen      -> add_polyline   (all field lines in one LINES primitive)
 !     pixel1/pixebe/.../pixeen -> add_image_quad (PNG texture with transparency)
 !     csuba (isosurface)       -> add_mesh       (triangles with normals and vertex colours)

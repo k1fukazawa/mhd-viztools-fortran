@@ -1,15 +1,12 @@
 # MHD viztools Fortran user manual
 
-Fortran tools to combine, analyse and visualize the output of global MHD simulations of planetary magnetospheres
-(e.g. the Jupiter code jupiter7). They are a modernized version of
-the late Prof. Tatsuki Ogino's visualization tools (combination `data_conbine3d_sxt_mem.f90`, vorticity `vorticity_ju02nt.f90`,
-slice plots `fig_h/xyju02nt171m.f` + `sub3ahpar2.f`, polar plots `fig_h/polar`, HDF5 conversion
-`hdf_convert_mem`/`hdf_convert_vort`, and 3-D visualization with VRML). Below, "legacy code" / "legacy tools" refer to these.
+Fortran tools to combine, analyse and visualize the output of global MHD simulations of planetary magnetospheres.
+They are a modernized version of the late Prof. Tatsuki Ogino's visualization tools. Below, "legacy code" / "legacy tools" refer to these.
 
 * Fortran 2008 + OpenMP. External libraries are needed only for HDF5 output
 * Grid sizes, paths, file numbers and plot contents are all given in namelists (no recompilation)
 * Output file formats are identical to the legacy tools (`m.data`, `.vort`, `.h5`/`.xmf`); existing Python tools and ParaView settings keep working
-* `make test` checks the tools (and compares with the legacy codes if they are available)
+* `make test` checks the tools
 * **Physical units**: the visualization and analysis tools multiply normalized quantities by the normalization constants and plot / write physical units (default; set in the `&units` group, see below)
 
 ## Contents
@@ -24,13 +21,13 @@ viztools/
   src/
     mhd_common.f90   common: stream access to sequential files, file names, timing
     mhdunits.f90     common: normalized -> physical units (&units, constants of each planet)
-    combine3d.f90    combination of per-rank files          (legacy data_conbine3d_sxt_mem.f90)
-    vorticity.f90    vorticity parallel / perpendicular to B (legacy vorticity_ju02nt.f90)
-    bin2hdf.F90      HDF5/XDMF conversion (MHD and vorticity) (legacy hdf_convert_mem, hdf_convert_vort)
-    psplot.f90       PostScript plotting library             (needed parts of legacy sub3ahpar2.f)
-    slice_plot.f90   slice plots                             (legacy fig_h/xyju02nt171m.f)
-    polar_map.f90    mapping to the polar ionosphere (FAC, convection, open-closed boundary) (legacy fig_h/polar)
-    mag3d.f90        3-D visualization (field lines, slices, isosurfaces, vectors -> glTF / X3D) (legacy VRML tools)
+    combine3d.f90    combination of per-rank files
+    vorticity.f90    vorticity parallel / perpendicular to B
+    bin2hdf.F90      HDF5/XDMF conversion (MHD and vorticity)
+    psplot.f90       PostScript plotting library
+    slice_plot.f90   slice plots
+    polar_map.f90    mapping to the polar ionosphere (FAC, convection, open-closed boundary)
+    mag3d.f90        3-D visualization (field lines, slices, isosurfaces, vectors -> glTF / X3D)
     mhdfield.f90     partial reading, interpolation and field-line tracing of 3-D data (for mag3d)
     scene3d.f90      3-D scene and writers for glTF (.glb) / X3D / PNG
     isosurf.f90      isosurface extraction (marching tetrahedra)
@@ -40,7 +37,7 @@ viztools/
     x3d_view.html    viewer for X3D and legacy VRML (.wrl) (X_ITE)
   namelist/          example settings of each tool (namelist/ja/: with Japanese comments)
   scripts/           ps2png.sh (PS -> PNG/PDF), job_example.sh (Slurm batch job example)
-  test/              regression tests (synthetic data, analytic solutions; legacy codes if available)
+  test/              regression tests (synthetic data, analytic solutions)
 ```
 
 ## Build
@@ -204,7 +201,7 @@ OMP_NUM_THREADS=2 ./bin/bin2hdf namelist/bin2hdf_mhd.nml    # 8 MHD variables
 OMP_NUM_THREADS=2 ./bin/bin2hdf namelist/bin2hdf_vort.nml   # 2 vorticity variables
 ```
 
-Merges the legacy `hdf_convert_mem` and `hdf_convert_vort`. The number and names of variables are given by `nvar`, `varname`.
+Merges the legacy HDF5 converters for MHD data and vorticity. The number and names of variables are given by `nvar`, `varname`.
 HDF5 dataset names and shape (nz2 x ny2 x nx2 in C order) are the same as before.
 
 | variable | meaning |
@@ -223,9 +220,9 @@ HDF5 dataset names and shape (nz2 x ny2 x nx2 in C order) are the same as before
 ## slice_plot (slice plots)
 
 ```sh
-OMP_NUM_THREADS=8 ./bin/slice_plot namelist/slice_legacy.nml   # same plot as the legacy xyju02nt171m.f
-./scripts/ps2png.sh xyju02nt171m.ps          # PNG (one image per page)
-./scripts/ps2png.sh xyju02nt171m.ps pdf      # PDF
+OMP_NUM_THREADS=8 ./bin/slice_plot namelist/slice_legacy.nml   # same plot as the legacy slice-plot code
+./scripts/ps2png.sh zxju03nt00m.ps           # PNG (one image per page)
+./scripts/ps2png.sh zxju03nt00m.ps pdf       # PDF
 ```
 
 One file (time step) per page. The namelist has two groups: `&slice` (files, grid, page) and `&panels` (each panel).
@@ -254,10 +251,10 @@ Give a name in `qty(p)`.
 | `log10:<qty>`, `abs:<qty>`, `neg:<qty>` | log10, absolute value, sign change (e.g. `log10:rho`) |
 
 * `vmin, vmax`: colour range. Equal values (default 0, 0): automatic (minimum to maximum)
-* `palette`: legacy `ico` (1–8). 3 = colours of the legacy plot, 8 = blue-white-red (for signed quantities)
-* `nsmooth`: number of legacy `diff2` smoothing passes (default 2)
+* `palette`: 1–8 (same numbers as the legacy code). 3 = colours of the legacy plot, 8 = blue-white-red (for signed quantities)
+* `nsmooth`: number of 5-point smoothing passes as in the legacy code (default 2)
 * `stride`: image thinning. 2 makes large PS files about 1/4
-* `vec`: `'v'` (velocity) / `'b'` (magnetic field) / `'none'`. In-plane components drawn as streamline arrows as the legacy `grap3a`. Normalized by `vecmax` (0: maximum), seed points `nvec_h, nvec_v`
+* `vec`: `'v'` (velocity) / `'b'` (magnetic field) / `'none'`. In-plane components drawn as streamline arrows as in the legacy code. Normalized by `vecmax` (0: maximum), seed points `nvec_h, nvec_v`
 * `row, col`: position on the page (row=1 at the top)
 * For `.vort` files use `nvar=2, varname='par','perp', parity=1,1` (`namelist/slice_vort.nml`)
 
@@ -286,8 +283,8 @@ Memory is a few slices (about 0.5 GB on the standard grid). yz slices take most 
 
 * Ticks (every `tick`), axis names, colour bars with units and the slice position are drawn. With `label_coord='jso'` (default) the ticks show X = −x, Y = −y, Z = z (same orientation as the legacy labels); `'sim'` gives simulation coordinates
 * Magnetic field vectors on xy slices are (Bx, By); the legacy code drew (Bx, −By) (nearly the same at z≈0 where By≈0 by symmetry)
-* The coefficient error ((1−Z)·R → (1−R)·Z) of the uy interpolation in the legacy `grap3a` is fixed
-* The legacy `diff2` behaviour of not smoothing the middle row is removed
+* The coefficient error ((1−Z)·R → (1−R)·Z) of the uy interpolation in the arrow drawing of the legacy code is fixed
+* The legacy smoothing behaviour of not smoothing the middle row is removed
 * Images use 4 bits per colour as before; hex strings are built in a character buffer, so writing is fast
 
 ## polar_map (mapping to the polar ionosphere)
@@ -296,8 +293,7 @@ Memory is a few slices (about 0.5 GB on the standard grid). yz slices take most 
 OMP_NUM_THREADS=32 ./bin/polar_map namelist/polar.nml
 ```
 
-Merges `prodp3_ju02nt.f` (open-closed boundary), `prodpc5_ju02nt.f` (convection, energy flux) and
-`polar_ju02nt.f` (plots) of the legacy `fig_h/polar`. The combined `m.data` is read directly, so neither `sdata` nor intermediate files (`.dp3`, `.dp5`) are needed.
+Merges the three legacy polar-plot programs (open-closed boundary, convection and energy flux, plotting) into one. The combined `m.data` is read directly, so neither `sdata` nor intermediate files (`.dp3`, `.dp5`) are needed.
 
 ### Method
 
@@ -312,7 +308,7 @@ A grid of "angle from the pole × MLT" (default 0.25° × 15 min) is taken on th
    directly by DFT in azimuth + tridiagonal solves in colatitude (no iteration, Φ=0 at the boundary).
    `j_conv = −∇·(Σ_P E)` (uniform Pedersen conductance Σ_P). The "Field-Aligned Current" of the legacy plot corresponds to this quantity
 5. **Open-closed boundary**: traced from the mapping point along B (2nd-order Runge–Kutta). For half-domain data a line reaching z=0 is closed (it returns to the conjugate point by symmetry); a line leaving the domain is open.
-   At the same time ⟨p·sqrt(p/ρ)⟩ (the "Energy Flux" proxy) is averaged up to the equator with the weight r²/(r_in²+r²) of the legacy `prodpc5`
+   At the same time ⟨p·sqrt(p/ρ)⟩ (the "Energy Flux" proxy) is averaged up to the equator with the weight r²/(r_in²+r²) of the legacy code
 
 Near the mapping points (radius `r_map` + a few cells) the data are read at full resolution; the global field for tracing (B, ρ, p) is thinned by `stride` (standard grid, stride=3: about 4.5 GB in memory, about 40 GB read). Tracing is OpenMP parallel.
 
@@ -337,7 +333,7 @@ Near the mapping points (radius `r_map` + a few cells) the data are read at full
 | `jfac` | extra factor for the currents (default 1; units are converted by `&units`) |
 | `jpar_delta` | difference width of J = ∇×B (multiple of the grid spacing h, default 2). With 2, numerical oscillations of wavelength 4h are not amplified by rot |
 | `jpar_avg` | length along the field line over which (J·B)/B² is averaged (default 4 RJ; 0: mapping point only). J∥/B is conserved along B, so averaging does not change the physical quantity |
-| `nsmooth` | smoothing passes of the plots (5-point as the legacy diff2, default 2). Not applied to the .bin data |
+| `nsmooth` | smoothing passes of the plots (5-point as in the legacy code, default 2). Not applied to the .bin data |
 
 ### Implementation note: row boundaries of PostScript images
 
@@ -349,19 +345,19 @@ If J at the mapping point is computed by central differences of width h, oscilla
 Therefore the difference width is 2h (`jpar_delta`), the value is averaged over 4 RJ along the field line (`jpar_avg`), and the plots get two passes of the legacy 5-point smoothing (`nsmooth`).
 In a test with synthetic data plus an oscillation of wavelength 4h, the noise/signal ratio of j_mhd dropped from 0.28 to 0.002 (up to 17° colatitude).
 
-### Problems found in the legacy code (fig_h/polar)
+### Problems found in the legacy code (polar plots)
 
-| code | problem | effect |
+| part | problem | effect |
 |---|---|---|
-| prodp3 | `ia(1)=nxg=10` is passed as the number of foot points, so only 12×12 instead of 202×202 points are computed; results fill only a corner of the 202×202 array (rows 191–202, columns 1–12) | the open-closed boundary is hardly drawn. Reproduced with synthetic data |
-| prodp3 | the inner dipole is built with `b0=+1`, while the simulation uses `b0=−1`; the two cancel at r ≈ 4.3 RJ and tracing turns back there | open/closed classification fails |
-| prodp3 | `ardr` is not initialized | results depend on the system |
-| prodpc5 | the x, y components of the velocity at the mapping point (r=10) are used directly as horizontal ionospheric components | the z component is discarded and the meridional mapping is wrong; for mapping points at colatitudes above 54.7° (foot points below about 15°) outward motion maps poleward but is drawn equatorward (wrong sign) |
-| prodpc5 | the electric field is mapped only by an isotropic ratio sqrt(B) | the dipole mapping scales differently (by about 2) in the meridional and azimuthal directions, so the vorticity (= FAC) is distorted |
-| polar | the velocity is multiplied by artificial windows `1/(1+R^8)` and `(1−r²)^0.25` before taking rot | the gradients of the windows create a spurious FAC ring at the outer edge (around 70°) |
-| polar | the Poisson equation is solved by ADI with fixed parameters, stopped after 100 iterations, over the whole square (including corners outside the polar cap) | the largest structure (lowest mode) reaches only 8% of the true solution (checked with the legacy routine); hence the contours in the corners and near the edge |
-| polar | the divergence-free velocity is renormalized by `max|u|/max|v_df|` | amplitude errors are hidden in the plots |
-| polar | FAC is computed as "vorticity of the flow × uniform conductance" | not the MHD current itself. The new code mainly plots the mapped MHD J∥ and keeps the convection-based value for comparison |
+| open-closed boundary | `ia(1)=nxg=10` is passed as the number of foot points, so only 12×12 instead of 202×202 points are computed; results fill only a corner of the 202×202 array (rows 191–202, columns 1–12) | the open-closed boundary is hardly drawn. Reproduced with synthetic data |
+| open-closed boundary | the inner dipole is built with `b0=+1`, while the simulation uses `b0=−1`; the two cancel at r ≈ 4.3 RJ and tracing turns back there | open/closed classification fails |
+| open-closed boundary | `ardr` is not initialized | results depend on the system |
+| convection | the x, y components of the velocity at the mapping point (r=10) are used directly as horizontal ionospheric components | the z component is discarded and the meridional mapping is wrong; for mapping points at colatitudes above 54.7° (foot points below about 15°) outward motion maps poleward but is drawn equatorward (wrong sign) |
+| convection | the electric field is mapped only by an isotropic ratio sqrt(B) | the dipole mapping scales differently (by about 2) in the meridional and azimuthal directions, so the vorticity (= FAC) is distorted |
+| plotting | the velocity is multiplied by artificial windows `1/(1+R^8)` and `(1−r²)^0.25` before taking rot | the gradients of the windows create a spurious FAC ring at the outer edge (around 70°) |
+| plotting | the Poisson equation is solved by ADI with fixed parameters, stopped after 100 iterations, over the whole square (including corners outside the polar cap) | the largest structure (lowest mode) reaches only 8% of the true solution (checked with the legacy routine); hence the contours in the corners and near the edge |
+| plotting | the divergence-free velocity is renormalized by `max|u|/max|v_df|` | amplitude errors are hidden in the plots |
+| plotting | FAC is computed as "vorticity of the flow × uniform conductance" | not the MHD current itself. The new code mainly plots the mapped MHD J∥ and keeps the convection-based value for comparison |
 
 ### Verification (`test/polar_test.py`, part of `make test`)
 
@@ -381,7 +377,7 @@ Compared with analytic solutions for synthetic data of a dipole + uniform field 
 OMP_NUM_THREADS=16 ./bin/mag3d namelist/mag3d.nml      # -> ju03nt3d.glb, ...
 ```
 
-Combines Prof. Ogino's VRML subroutines (`zvrsub*.f`) and the programs using them, `zvrmag*.f` (field lines), `zvrmpx*.f` (stacked slices), `mcub*.f` (isosurfaces), `zvrveld.f` (velocity vectors), into one program. It reads the combined `m.data` directly and writes one 3-D scene per time step.
+Combines Prof. Ogino's VRML subroutines and the legacy programs using them (field lines, stacked slices, isosurfaces, velocity vectors) into one program. It reads the combined `m.data` directly and writes one 3-D scene per time step.
 
 ### Output formats
 
@@ -396,22 +392,22 @@ For large data the heavy work (field-line tracing, isosurfaces) is done by Fortr
 
 ### Contents
 
-| element | namelist | legacy routine |
-|---|---|---|
-| field lines (from a polar foot-point grid, latitude × MLT) | `fl_polar`, `fl_hemi`, `fl_lat_min/max`, `fl_nlat`, `fl_nmlt`, `fl_r_start` | ainte1 / ainte1d |
-| field lines (from an equatorial grid, both directions) | `fl_equator`, `eq_xmin` … `eq_ny` | ainte21 / ainte21d |
-| field lines (from any points) | `fl_npt`, `fl_px/py/pz` | — |
-| field lines (from a 3-D grid; for lines not connected to the planet) | `fl_box`, `fl_box_lo/hi`, `fl_box_n`, `fl_keep` | — |
-| only lines near the open-closed boundary | `fl_select='ocb'` | ainte1a + zsub33d |
-| field-line colours | `fl_color='topology'` (closed: green / open: blue / solar wind: magenta / detached: grey) or a quantity name | fixed colours |
-| slices (colour images, translucent) | `pl_plane`, `pl_pos`, `pl_qty`, `pl_vmin/vmax`, `pl_alpha`, `pl_alpha_mode` | pixel1 / pixeco / pixect |
-| stacked slices (pseudo volume, up to 3 directions at once) | `stk_plane(1:3)`, `stk_n`, `stk_lo/hi`, `stk_qty`, `stk_vmin/vmax`, `stk_tra`, `stk_alpha` (maximum opacity, default 0.4) (e.g. `stk_plane = 'yz','xz','xy'`). The viewer's "Stacks" slider changes the opacity of all sets at once (the "Slices" slider also applies) | zvrmpx |
-| selectable slices (one shown at a time in the viewer, up to 3 sets) | `sel_plane`, `sel_n`, `sel_lo/hi`, `sel_qty`, `sel_vmin/vmax`, `sel_alpha`, `sel_palette` | — |
-| isosurfaces | `iso_qty`, `iso_level`, `iso_color`, `iso_alpha`, `iso_stride`, `iso_max_tri` (default 2 million; thinned automatically above it), `iso_smooth` (smoothing passes before extraction, default 1) | csuba |
-| vector arrows (velocity, magnetic field) | `arr_plane`, `arr_pos`, `arr_vec`, `arr_n` | arrow / zvrveld |
-| frame, axes, ticks, title, planet | `draw_frame`, `draw_planet`, `draw_inner`, `label_size` | linebe/lineen, symblv2, sphere1 |
-| planet image, Saturn's rings | `planet_texture` ('auto' / file name / 'none'), `planet_lon0`, `draw_rings`, `ring_r1/r2` | — |
-| colour bars | shown by the viewer; `colorbar_3d=.true.` also draws them in the scene | — |
+| element | namelist |
+|---|---|
+| field lines (from a polar foot-point grid, latitude × MLT) | `fl_polar`, `fl_hemi`, `fl_lat_min/max`, `fl_nlat`, `fl_nmlt`, `fl_r_start` |
+| field lines (from an equatorial grid, both directions) | `fl_equator`, `eq_xmin` … `eq_ny` |
+| field lines (from any points) | `fl_npt`, `fl_px/py/pz` |
+| field lines (from a 3-D grid; for lines not connected to the planet) | `fl_box`, `fl_box_lo/hi`, `fl_box_n`, `fl_keep` |
+| only lines near the open-closed boundary | `fl_select='ocb'` |
+| field-line colours | `fl_color='topology'` (closed: green / open: blue / solar wind: magenta / detached: grey) or a quantity name |
+| slices (colour images, translucent) | `pl_plane`, `pl_pos`, `pl_qty`, `pl_vmin/vmax`, `pl_alpha`, `pl_alpha_mode` |
+| stacked slices (pseudo volume, up to 3 directions at once) | `stk_plane(1:3)`, `stk_n`, `stk_lo/hi`, `stk_qty`, `stk_vmin/vmax`, `stk_tra`, `stk_alpha` (maximum opacity, default 0.4) (e.g. `stk_plane = 'yz','xz','xy'`). The viewer's "Stacks" slider changes the opacity of all sets at once (the "Slices" slider also applies) |
+| selectable slices (one shown at a time in the viewer, up to 3 sets) | `sel_plane`, `sel_n`, `sel_lo/hi`, `sel_qty`, `sel_vmin/vmax`, `sel_alpha`, `sel_palette` |
+| isosurfaces | `iso_qty`, `iso_level`, `iso_color`, `iso_alpha`, `iso_stride`, `iso_max_tri` (default 2 million; thinned automatically above it), `iso_smooth` (smoothing passes before extraction, default 1) |
+| vector arrows (velocity, magnetic field) | `arr_plane`, `arr_pos`, `arr_vec`, `arr_n` |
+| frame, axes, ticks, title, planet | `draw_frame`, `draw_planet`, `draw_inner`, `label_size` |
+| planet image, Saturn's rings | `planet_texture` ('auto' / file name / 'none'), `planet_lon0`, `draw_rings`, `ring_r1/r2` |
+| colour bars | shown by the viewer; `colorbar_3d=.true.` also draws them in the scene |
 
 Quantity names are the same as in slice_plot (rho, vx … bz, temp, absb, absbz, absv, beta, pdyn, log10:<qty> etc.). For half-domain data (z≥0), field lines, slices and isosurfaces are drawn down to z<0 using parity.
 Give `pl_qty(n)` for every index given in `pl_plane(n)` (otherwise an error; this catches index mistakes such as `pl_plane(2)= ..., pl_qty(1)= ...`).
@@ -513,17 +509,14 @@ A legacy VRML output with about 1000 field lines and 3 slices was 4.4 MB of ASCI
 ## Tests
 
 ```sh
-make && cd test && ./run_tests.sh [directory with the legacy codes]
+make test
 ```
 
 Each tool is run on small synthetic data and compared with analytic solutions or independent calculations (python3 + numpy required).
 combine3d (normal / big endian / 8-byte markers × 1, 2, 4 threads) is compared with the generating formula, vorticity with a numpy calculation,
 and polar_map with analytic solutions. bin2hdf (raw, HDF5) must be bit identical to the input.
-If a directory with the legacy codes (`data_conbine3d_sxt_mem.f90`, `vorticity_ju02nt.f90`, `fig_h/`) is given,
-the legacy codes are modified for a small grid, built and run, and their outputs are also compared
-(combine3d bit identical, vorticity within 1e-4 relative because of the double-precision computation).
 Conversion to physical units is checked for bin2hdf (raw/XDMF/HDF5 attributes) and slice_plot (ratio to the normalized version).
-With the legacy codes, slice_plot also writes old and new PostScript and PNG to `test/work/s/` for visual comparison.
+The slice_plot output is written to `test/work/s/new.ps` (and `new.png` if ghostscript is available) for visual checks.
 
 ## Performance (small tests)
 

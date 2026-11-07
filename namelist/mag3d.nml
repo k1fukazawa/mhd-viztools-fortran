@@ -1,4 +1,4 @@
-! namelist for mag3d : 3-D visualization (successor of the legacy VRML tools zvrmag*/zvrmpx*/mcub*)
+! namelist for mag3d : 3-D visualization (successor of the legacy VRML tools)
 !   all positions and ranges in simulation coordinates centered on the planet [planetary radii] (x: anti-sunward, z: north).
 !   output: <outbase>.glb (default) / <outbase>.x3d + png images (out_x3d=.true.)
 !   view with viewer/viewer.html (glb) / viewer/x3d_view.html (x3d and legacy .wrl)
@@ -37,7 +37,7 @@
   ! pl_plane(2) = 'xy', pl_pos(2) = 0.0, pl_qty(2) = 'log10:rho', pl_alpha_mode(2) = 'value', pl_tra(2) = 2.0,
   pl_plane(2) = 'xy', pl_pos(2) = 0.0, pl_qty(2) = 'temp', pl_vmin(2) = 0.0, pl_vmax(2) = 161.2,   ! [eV]
   pl_alpha(2) = 0.85,
-  ! ---- stacked slices (legacy zvrmpx: parallel planes as a pseudo volume). Up to 3 directions at once
+  ! ---- stacked slices (parallel planes as a pseudo volume, as in the legacy code). Up to 3 directions at once
   !      (for one set simply stk_plane = 'yz', stk_n = 11, ...)
   stk_plane = 'yz', 'xz', 'xy',
   stk_n     = 11,     7,      5,
@@ -51,9 +51,9 @@
   ! ---- selectable slices: sel_n parallel planes; the viewer slider shows one of them (up to 3 sets)
   ! sel_plane(1) = 'yz', sel_n(1) = 21, sel_lo(1) = -50.0, sel_hi(1) = 250.0, sel_qty(1) = 'temp',
   ! sel_vmin(1) = 0.0, sel_vmax(1) = 300.0, sel_alpha(1) = 0.9,
-  ! ---- isosurfaces (legacy csuba / mcub). Thinned automatically above iso_max_tri triangles (default 2 million)
+  ! ---- isosurfaces. Thinned automatically above iso_max_tri triangles (default 2 million)
   iso_qty(1) = 'temp', iso_level(1) = 43.8, iso_color(:,1) = 1.0, 0.5, 0.2, iso_alpha(1) = 0.4,
-  ! ---- velocity vectors (legacy zvrveld)
+  ! ---- velocity vectors
   ! arr_plane = 'xy', arr_pos = 0.0, arr_vec = 'v', arr_n = 40,
 /
 

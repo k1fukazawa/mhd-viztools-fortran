@@ -1,7 +1,7 @@
 !==============================================================================
 ! combine3d : combine per-process (per-rank) output files into one 3-D data file
 !
-!   Replaces the legacy data_conbine3d_sxt_mem.f90 (K. FUKAZAWA, 2011).
+!   Replaces the legacy combination code (K. FUKAZAWA, 2011).
 !   The output file (e.g. ju03nt000m.data) has exactly the same format as before:
 !     sequential unformatted, do m=1,nb ; do k=1,onz ; write(u) f(1:onx,1:ony,k)
 !

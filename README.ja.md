@@ -34,6 +34,17 @@
 元のツールの出力形式 (`m.data`, `.vort`, `.h5`/`.xmf`) はそのまま保っているので、既存のデータや解析スクリプトも使えます。
 元のツールで見つかった問題点 (極域図の写像・電位計算など) とその修正内容は [利用者マニュアル](doc/manual_ja.md) に書いてあります。
 
+### 例 (木星の計算)
+
+| `slice_plot` | `polar_map` |
+|---|---|
+| <img src="doc/images/slice_plot.png" width="460" alt="slice_plot の例"> | <img src="doc/images/polar_map.png" width="330" alt="polar_map の例"> |
+| 子午面 (左) と朝夕面 (右) の磁場強度 (上) と温度 (下)、磁場・速度ベクトル付き | 南半球の極域電離圏: 沿磁力線電流、対流電位と写像した流れ、対流から求めた沿磁力線電流、エネルギーフラックスの目安と開閉境界 |
+
+`mag3d` (`viewer/viewer.html` で表示): 赤道面と子午面の温度、惑星に繋がる磁力線と繋がらない磁力線
+
+<img src="doc/images/mag3d.png" width="700" alt="mag3d の例">
+
 ## 必要なもの
 
 * Fortran コンパイラ: gfortran, Intel ifx/ifort, NEC nfort, Fujitsu frtpx, NVIDIA nvfortran (Makefile で選択)

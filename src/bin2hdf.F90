@@ -1,7 +1,7 @@
 !==============================================================================
 ! bin2hdf : convert combined binaries (m.data / .vort) to HDF5 + XDMF for ParaView
 !
-!   Merges the legacy hdf_convert_mem (8 MHD variables) and hdf_convert_vort (2 vorticity variables).
+!   Merges the legacy HDF5 converters for MHD data (8 variables) and vorticity (2 variables).
 !   Number and names of variables and file names are given in a namelist (namelist/bin2hdf_*.nml).
 !   HDF5 dataset names and array shape (nz2 x ny2 x nx2 in C order) are the same as before,
 !   so existing Python (h5py) scripts and ParaView settings still work.

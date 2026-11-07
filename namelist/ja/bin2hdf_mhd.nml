@@ -1,4 +1,4 @@
-! bin2hdf 用 namelist : MHD 8 変数 (旧 hdf_convert_mem と同じ)
+! bin2hdf 用 namelist : MHD 8 変数 (旧コードと同じ)
 &bin2hdf
   nx2 = 3002, ny2 = 2002, nz2 = 1002, nvar = 8,
   varname = 'RHO', 'VX', 'VY', 'VZ', 'P', 'BX', 'BY', 'BZ',

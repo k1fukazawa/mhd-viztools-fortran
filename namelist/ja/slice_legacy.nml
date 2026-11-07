@@ -1,4 +1,4 @@
-! slice_plot 用 namelist : 旧 fig_h/xyju02nt171m.f と同じ図
+! slice_plot 用 namelist : 旧コードと同じ図
 !   上段: B (|Bz|, |B|) + 磁場ベクトル
 !   下段: T = p/rho + 速度ベクトル
 &slice

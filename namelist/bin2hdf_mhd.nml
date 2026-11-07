@@ -1,4 +1,4 @@
-! namelist for bin2hdf : 8 MHD variables (same as the legacy hdf_convert_mem)
+! namelist for bin2hdf : 8 MHD variables (same as the legacy code)
 &bin2hdf
   nx2 = 3002, ny2 = 2002, nz2 = 1002, nvar = 8,
   varname = 'RHO', 'VX', 'VY', 'VZ', 'P', 'BX', 'BY', 'BZ',

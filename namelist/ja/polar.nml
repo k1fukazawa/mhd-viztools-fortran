@@ -1,4 +1,4 @@
-! polar_map 用 namelist : 極域電離圏への写像 (旧 fig_h/polar の prodp3 + prodpc5 + polar)
+! polar_map 用 namelist : 極域電離圏への写像 (旧コードの極域図 3 本を 1 本にしたもの)
 !   結合済みデータ (m.data, z>=0 の半領域) から直接計算する。sdata の作成は不要。
 &polar
   diri = './',

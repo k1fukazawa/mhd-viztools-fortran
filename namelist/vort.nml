@@ -1,4 +1,4 @@
-! namelist for vorticity (same settings as the legacy vorticity_ju02nt.f90)
+! namelist for vorticity (same settings as the legacy code)
 &vort
   nx2 = 3002, ny2 = 2002, nz2 = 1002, nb = 8,
   hx = 0.15, hy = 0.15, hz = 0.15,

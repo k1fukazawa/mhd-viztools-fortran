@@ -35,6 +35,17 @@ and work with Saturn and Earth simulations that use the same output format.
 The output formats of the original tools (`m.data`, `.vort`, `.h5`/`.xmf`) are kept, so existing data and analysis scripts still work.
 Problems found in the original tools (mapping and potential solver of the polar plots, etc.) and how they were fixed are described in the [user manual](doc/manual_en.md).
 
+### Examples (Jupiter simulation)
+
+| `slice_plot` | `polar_map` |
+|---|---|
+| <img src="doc/images/slice_plot.png" width="460" alt="slice_plot example"> | <img src="doc/images/polar_map.png" width="330" alt="polar_map example"> |
+| Magnetic field strength (top) and temperature (bottom) in the noon-midnight meridian (left) and dawn-dusk meridian (right) planes, with magnetic-field and velocity vectors | Southern polar ionosphere: field-aligned current, convection potential and mapped flow, FAC from convection, and an energy-flux proxy, with the open-closed boundary |
+
+`mag3d` (displayed with `viewer/viewer.html`): temperature in the equatorial and noon-midnight meridian planes, with field lines connected to the planet and field lines not connected to it
+
+<img src="doc/images/mag3d.png" width="700" alt="mag3d example">
+
 ## Requirements
 
 * Fortran compiler: gfortran, Intel ifx/ifort, NEC nfort, Fujitsu frtpx, NVIDIA nvfortran (selected in the Makefile)

@@ -1,7 +1,7 @@
 !==============================================================================
 ! slice_plot : PostScript plots of slices of combined 3-D data (m.data / .vort)
 !
-!   Replaces the legacy fig_h/xyju02nt171m.f + sub3ahpar2.f (F90, no recompilation needed)
+!   Replaces the legacy slice-plot code (F90, no recompilation needed)
 !
 !   * quantities, slices (xy/xz/yz and position), colour ranges, vectors and layout are
 !     all given in a namelist (default slice.nml)

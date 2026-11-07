@@ -1,4 +1,4 @@
-! mag3d 用 namelist : 3 次元可視化 (旧 VRML ツール zvrmag*/zvrmpx*/mcub* の後継)
+! mag3d 用 namelist : 3 次元可視化 (旧 VRML ツールの後継)
 !   位置・範囲はすべて惑星中心のシミュレーション座標 [RJ] (x: 反太陽方向, z: 北) で与える。
 !   出力: <outbase>.glb (既定) / <outbase>.x3d + 画像 png (out_x3d=.true.)
 !   見るには viewer/viewer.html (glb) / viewer/x3d_view.html (x3d と旧 .wrl)
@@ -37,7 +37,7 @@
   ! pl_plane(2) = 'xy', pl_pos(2) = 0.0, pl_qty(2) = 'log10:rho', pl_alpha_mode(2) = 'value', pl_tra(2) = 2.0,
   pl_plane(2) = 'xy', pl_pos(2) = 0.0, pl_qty(2) = 'temp', pl_vmin(2) = 0.0, pl_vmax(2) = 161.2,   ! [eV]
   pl_alpha(2) = 0.85,
-  ! ---- 多重断面 (旧 zvrmpx: 同じ向きの面を重ねて擬似ボリューム表示)。3 方向まで同時に描ける
+  ! ---- 多重断面 (旧コードと同様に、同じ向きの面を重ねて擬似ボリューム表示)。3 方向まで同時に描ける
   !      (1 組だけなら stk_plane = 'yz', stk_n = 11, ... のように従来どおり)
   stk_plane = 'yz', 'xz', 'xy',
   stk_n     = 11,     7,      5,
@@ -51,9 +51,9 @@
   ! ---- 選択断面: 同じ向きの断面を sel_n 枚作っておき、ビューアのスライダーで 1 枚を選んで表示 (3 組まで)
   ! sel_plane(1) = 'yz', sel_n(1) = 21, sel_lo(1) = -50.0, sel_hi(1) = 250.0, sel_qty(1) = 'temp',
   ! sel_vmin(1) = 0.0, sel_vmax(1) = 300.0, sel_alpha(1) = 0.9,
-  ! ---- 等値面 (旧 csuba / mcub)。三角形が iso_max_tri (既定 200 万) を超えると自動で間引く
+  ! ---- 等値面。三角形が iso_max_tri (既定 200 万) を超えると自動で間引く
   iso_qty(1) = 'temp', iso_level(1) = 43.8, iso_color(:,1) = 1.0, 0.5, 0.2, iso_alpha(1) = 0.4,
-  ! ---- 速度ベクトル (旧 zvrveld)
+  ! ---- 速度ベクトル
   ! arr_plane = 'xy', arr_pos = 0.0, arr_vec = 'v', arr_n = 40,
 /
 

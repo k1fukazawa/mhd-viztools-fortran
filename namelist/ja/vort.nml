@@ -1,4 +1,4 @@
-! vorticity 用 namelist (旧 vorticity_ju02nt.f90 と同じ設定)
+! vorticity 用 namelist (旧コードと同じ設定)
 &vort
   nx2 = 3002, ny2 = 2002, nz2 = 1002, nb = 8,
   hx = 0.15, hy = 0.15, hz = 0.15,

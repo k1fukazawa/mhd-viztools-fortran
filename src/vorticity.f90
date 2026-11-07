@@ -1,7 +1,7 @@
 !==============================================================================
 ! vorticity : components of the vorticity parallel and perpendicular to B
 !
-!   Replaces the legacy vorticity_ju02nt.f90. Same input/output formats:
+!   Replaces the legacy vorticity code. Same input/output formats:
 !     input   ju02nt###m.data : sequential unformatted, nb variables x nz2 planes
 !     output  ju02nt###.vort  : same format, variable 1 = omega_par, 2 = omega_perp
 !       omega      = rot v   (2nd-order central differences)

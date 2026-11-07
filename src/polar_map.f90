@@ -1,8 +1,8 @@
 !==============================================================================
 ! polar_map : computation and plots of quantities mapped to the polar ionosphere (FAC, convection, open-closed boundary)
 !
-!   Replaces prodp3_ju02nt.f (open-closed boundary), prodpc5_ju02nt.f (convection, energy
-!   flux) and polar_ju02nt.f (plots) of the legacy fig_h/polar; one program from computation to plots.
+!   Replaces the three legacy polar-plot programs (open-closed boundary, convection and energy
+!   flux, plots); one program from computation to plots.
 !
 ! Computation (colatitude x MLT grid on the ionosphere R = 1 planetary radius)
 !   1. mapping point: from the ionospheric foot point (colatitude th0) along the dipole field line

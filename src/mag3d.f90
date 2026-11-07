@@ -1,7 +1,7 @@
 !==============================================================================
 ! mag3d : 3-D visualization of magnetospheric MHD data (field lines, slices, isosurfaces, vectors)
 !
-!   Successor of the VRML tools of the late Prof. Tatsuki Ogino (zvrsub*.f with zvrmag*.f, zvrmpx*.f, mcub*.f etc.).
+!   Successor of the VRML tools of the late Prof. Tatsuki Ogino.
 !   One scene per time step, written as
 !     * binary glTF 2.0 (.glb)    : default. Opens in viewer/viewer.html (browser), Blender,
 !                                    ParaView and the Windows 3D viewer
@@ -12,7 +12,7 @@
 !               coloured by topology (closed green, open blue, solar wind magenta, detached grey) or by a quantity.
 !               lines near the open-closed boundary can be selected (legacy zsub33d)
 !     - slices: colour images on xy/xz/yz planes (optionally translucent); "stacked slices" of equally
-!             spaced parallel planes in up to 3 directions (legacy zvrmpx), and "selectable slices" shown one at a time
+!             spaced parallel planes in up to 3 directions (as in the legacy code), and "selectable slices" shown one at a time
 !     - isosurfaces: marching tetrahedra with shared vertices and gradient normals
 !     - vector arrows (velocity, B), frame, axes, labels, colour bars, planet with an image (Saturn's rings)
 !   Large data: the global field is read with stride thinning and the region near the planet at full

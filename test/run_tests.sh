@@ -2,14 +2,11 @@
 #==============================================================================
 # Regression tests: run each tool on small synthetic data and compare with analytic solutions / independent calculations
 #
-#   usage   :  make && cd test && ./run_tests.sh [directory with the legacy codes]
+#   usage   :  make test   (or: make && cd test && ./run_tests.sh)
 #   requires: gfortran (to generate test data), python3 + numpy
-#   optional: if the legacy codes (data_conbine3d_sxt_mem.f90, vorticity_ju02nt.f90, fig_h/) are given,
-#             the outputs are also compared with them. HDF5 output is checked if h5py is available
+#   optional: HDF5 output is checked if h5py is available
 #==============================================================================
 set -u
-ORIG=${1:-../..}
-have_old() { [ -f "$ORIG/$1" ]; }
 BIN=$(cd ../bin && pwd)
 FC=${FC:-gfortran}
 W=$(pwd)/work
@@ -19,19 +16,8 @@ ok()  { echo "  [PASS] $1"; pass=$((pass+1)); }
 ng()  { echo "  [FAIL] $1"; fail=$((fail+1)); }
 
 #------------------------------------------------------------------ combine3d
-echo "== combine3d vs data_conbine3d_sxt_mem.f90"
-mkdir -p "$W/c" && cd "$W/c" && mkdir -p in outold outnew
-OLDC=0; have_old data_conbine3d_sxt_mem.f90 && OLDC=1
-[ $OLDC = 1 ] && sed -e 's/npex = 8, npey = 16, npez = 16/npex = 2, npey = 3, npez = 4/' \
-    -e 's/nxx = 750, nyy = 250, nzz = 125, nxp = 1000/nxx = 10, nyy = 8, nzz = 6, nxp = 4/' \
-    -e 's/mx = 3000, my = 2000, mz = 1000, mxp = 500/mx = 8, my = 10, mz = 10, mxp = 2/' \
-    -e 's#^  character(len = [0-9]*), parameter :: diri = .*$#  character(len = 3), parameter :: diri = "in/"#' \
-    -e 's#^  character(len = [0-9]*), parameter :: diro = .*$#  character(len = 7), parameter :: diro = "outold/"#' \
-    -e 's/open(irank, file/open(irank+100, file/' -e 's/read(irank)/read(irank+100)/' \
-    -e 's/close(irank)/close(irank+100)/' \
-    "$ORIG/data_conbine3d_sxt_mem.f90" > old_combine.f90
-[ $OLDC = 1 ] && $FC -O2 old_combine.f90 -o old_combine
-[ $OLDC = 0 ] && echo "  (no legacy code: compared with the values of the generating formula)"
+echo "== combine3d"
+mkdir -p "$W/c" && cd "$W/c" && mkdir -p in outnew
 cat > combine.nml <<'EOF'
 &combine
  npex=2, npey=3, npez=4, nxx=10, nyy=8, nzz=6, nb=8,
@@ -42,13 +28,9 @@ EOF
 for conv in "" "-fconvert=big-endian" "-frecord-marker=8"; do
   rm -f in/*
   $FC $conv ../../gen_ranks.f90 -o gen && ./gen
-  [ -z "$conv" ] && [ $OLDC = 1 ] && ./old_combine > /dev/null
   for t in 1 2 4; do
     OMP_NUM_THREADS=$t "$BIN/combine3d" > log_$t.txt 2>&1
-    if [ $OLDC = 1 ]; then
-      if cmp -s outold/ju03nt000m.data outnew/ju03nt000m.data; then ok "input[$conv] threads=$t : bit identical to old code"
-      else ng "input[$conv] threads=$t"; fi
-    elif python3 - <<'EOF'
+    if python3 - <<'EOF'
 import numpy as np
 # gen_ranks.f90: f = m*1e6 + i + 100 j + 1e4 k + 0.25 (global grid indices); output covers (4..13, 7..18, 1..12)
 nx, ny, nz = 10, 12, 12
@@ -69,23 +51,11 @@ EOF
 done
 
 #------------------------------------------------------------------ vorticity
-echo "== vorticity vs vorticity_ju02nt.f90"
-mkdir -p "$W/v" && cd "$W/v" && mkdir -p old new
+echo "== vorticity"
+mkdir -p "$W/v" && cd "$W/v" && mkdir -p new
 $FC ../../gen_m.f90 -o genm && ./genm
-OLDV=0; have_old vorticity_ju02nt.f90 && OLDV=1
-[ $OLDV = 1 ] && sed -e 's/nx = 3000, ny = 2000, nz = 1000/nx = 38, ny = 28, nz = 18/' \
-    -e 's/last = 5, ntap = 186/last = 1, ntap = 186/' \
-    -e 's#^  character(len = [0-9]*), parameter :: diri = .*$#  character(len = 2), parameter :: diri = "./"#' \
-    -e 's#^  character(len = [0-9]*), parameter :: diro = .*$#  character(len = 4), parameter :: diro = "old/"#' \
-    "$ORIG/vorticity_ju02nt.f90" > old_vort.f90
-[ $OLDV = 1 ] && $FC -O2 old_vort.f90 -o old_vort && ./old_vort > /dev/null
 printf "&vort\n nx2=40, ny2=30, nz2=20, diri='./', diro='new/', ntap=186\n/\n" > vort.nml
 "$BIN/vorticity" > log.txt 2>&1
-if [ $OLDV = 1 ]; then
-  $FC ../../cmp_vort.f90 -o cmp_vort
-  if ./cmp_vort old/ju02nt186.vort new/ju02nt186.vort 40 30 20; then ok "interior points agree with old code (rel. 1e-4)"
-  else ng "vorticity mismatch"; fi
-fi
 if python3 - <<'EOF'
 import numpy as np
 nx, ny, nz, h = 40, 30, 20, 0.15
@@ -159,7 +129,7 @@ else
 fi
 
 #------------------------------------------------------------------ slice_plot
-echo "== slice_plot (old/new PostScript for visual comparison)"
+echo "== slice_plot"
 mkdir -p "$W/s" && cd "$W/s"
 $FC -O2 ../../gen_mag.f90 -o gen_mag && ./gen_mag
 cat > slice.nml <<'EOF'
@@ -192,18 +162,8 @@ for p in range(4):
 assert 'eV' in open('phys.ps', errors='ignore').read()
 EOF
 then ok "slice_plot physical units (B x bs, T x temps)"; else ng "slice_plot physical units"; fi
-if [ -f "$ORIG/fig_h/xyju02nt171m.f" ]; then
-  sed -e 's/parameter (nx= 3000,ny= 2000,nz= 1000,nb = 8,las1=41,ixc=1001)/parameter (nx= 300,ny= 200,nz= 100,nb = 8,las1=41,ixc=101)/' \
-      -e 's/parameter (last=10,iiq0=1,xxl=450.15,mm=2)/parameter (last=1,iiq0=1,xxl=450.15,mm=2)/' \
-      -e 's/parameter (nxp=500,ar1=3.0, ipe1=1)/parameter (nxp=50,ar1=3.0, ipe1=1)/' \
-      -e "s#'[^']*ju02nt171m.data'#'ju02nt171m.data'#" \
-      "$ORIG/fig_h/xyju02nt171m.f" | awk '/open\(1[2-9],|open\(20,/{skip=2} skip>0{skip--;next} {print}' > old_xy.f
-  $FC -O2 -std=legacy old_xy.f "$ORIG/fig_h/sub3ahpar2.f" -o old_xy 2>/dev/null && ./old_xy > old.ps
-  [ -s old.ps ] && ok "old.ps written (compare visually with new.ps)"
-fi
 if command -v gs > /dev/null; then
-  for f in old new; do [ -f $f.ps ] && gs -q -dNOPAUSE -dBATCH -sDEVICE=png16m -sPAPERSIZE=a4 -r80 -sOutputFile=$f.png $f.ps; done
-  echo "  PNG: $W/s/old.png, $W/s/new.png"
+  gs -q -dNOPAUSE -dBATCH -sDEVICE=png16m -sPAPERSIZE=a4 -r80 -sOutputFile=new.png new.ps && echo "  PNG: $W/s/new.png"
 fi
 
 #------------------------------------------------------------------ mag3d

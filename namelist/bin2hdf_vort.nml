@@ -1,4 +1,4 @@
-! namelist for bin2hdf : 2 vorticity variables (same as the legacy hdf_convert_vort)
+! namelist for bin2hdf : 2 vorticity variables (same as the legacy code)
 &bin2hdf
   nx2 = 3002, ny2 = 2002, nz2 = 1002, nvar = 2,
   varname = 'ParaVort', 'PerpVort',

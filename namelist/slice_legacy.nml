@@ -1,4 +1,4 @@
-! namelist for slice_plot : the same plot as the legacy fig_h/xyju02nt171m.f
+! namelist for slice_plot : the same plot as the legacy code
 !   top row   : B (|Bz|, |B|) + magnetic field vectors
 !   bottom row: T = p/rho + velocity vectors
 &slice

@@ -1,14 +1,11 @@
 # MHD viztools Fortran 利用者マニュアル
 
-惑星磁気圏 MHD シミュレーション (木星版コード jupiter7 など) の出力を結合・解析・可視化する
-Fortran ツール群。故 荻野瀧樹教授の可視化ツール (結合 `data_conbine3d_sxt_mem.f90`, 渦度 `vorticity_ju02nt.f90`,
-断面図 `fig_h/xyju02nt171m.f` + `sub3ahpar2.f`, 極域図 `fig_h/polar`, HDF5 変換 `hdf_convert_mem`/`hdf_convert_vort`,
-VRML による 3 次元可視化) をモダン化したもの。以下で「旧コード」「旧ツール」はこれらを指す。
+惑星磁気圏 MHD シミュレーションの出力を結合・解析・可視化する Fortran ツール群。故 荻野瀧樹教授の可視化ツールをモダン化したもの。以下で「旧コード」「旧ツール」はこれらを指す。
 
 * すべて Fortran 2008 + OpenMP。外部ライブラリは HDF5 出力時のみ必要
 * 格子サイズ・パス・ファイル番号・描画内容はすべて namelist で与える (再コンパイル不要)
 * 出力ファイル形式は旧ツールと同一 (`m.data`, `.vort`, `.h5`/`.xmf`)。既存の Python ツールや ParaView の設定はそのまま使える
-* `make test` で動作を確認できる (旧コードがあれば旧コードの出力とも比較する)
+* `make test` で動作を確認できる
 * **物理単位**: 可視化・解析ツールは規格化量に規格化定数を掛けて物理単位で表示・出力する (既定。`&units` グループで設定, 下記)
 
 ## 構成
@@ -23,13 +20,13 @@ viztools/
   src/
     mhd_common.f90   共通: sequential ファイルの stream アクセス, ファイル名, 時間計測
     mhdunits.f90     共通: 規格化量 -> 物理単位 (&units, 惑星ごとの規格化定数)
-    combine3d.f90    ランク毎ファイルの結合          (旧 data_conbine3d_sxt_mem.f90)
-    vorticity.f90    渦度の B 平行/垂直成分          (旧 vorticity_ju02nt.f90)
-    bin2hdf.F90      HDF5/XDMF 変換 (MHD・渦度共通)  (旧 hdf_convert_mem, hdf_convert_vort)
-    psplot.f90       PostScript 描画ライブラリ        (旧 sub3ahpar2.f の必要部分)
-    slice_plot.f90   断面図                          (旧 fig_h/xyju02nt171m.f)
-    polar_map.f90    極域電離圏への写像 (FAC・対流・開閉境界) (旧 fig_h/polar の 3 本)
-    mag3d.f90        3 次元可視化 (磁力線・断面・等値面・ベクトル → glTF / X3D) (旧 VRML ツール)
+    combine3d.f90    ランク毎ファイルの結合
+    vorticity.f90    渦度の B 平行/垂直成分
+    bin2hdf.F90      HDF5/XDMF 変換 (MHD・渦度共通)
+    psplot.f90       PostScript 描画ライブラリ
+    slice_plot.f90   断面図
+    polar_map.f90    極域電離圏への写像 (FAC・対流・開閉境界)
+    mag3d.f90        3 次元可視化 (磁力線・断面・等値面・ベクトル → glTF / X3D)
     mhdfield.f90     3D データの部分読み込み・補間・磁力線追跡 (mag3d 用)
     scene3d.f90      3D シーンと glTF (.glb) / X3D / PNG の書き出し
     isosurf.f90      等値面抽出 (marching tetrahedra)
@@ -39,7 +36,7 @@ viztools/
     x3d_view.html    X3D と旧 VRML (.wrl) のビューア (X_ITE)
   namelist/          各ツールの設定例 (英語コメント)。namelist/ja/ は日本語コメント版
   scripts/           ps2png.sh (PS→PNG/PDF), job_example.sh (Slurm のバッチジョブ例, 日本語版は scripts/ja/)
-  test/              回帰テスト (合成データ・解析解との比較。旧コードがあれば旧コードとも比較)
+  test/              回帰テスト (合成データ・解析解との比較)
 ```
 
 ## ビルド
@@ -203,7 +200,7 @@ OMP_NUM_THREADS=2 ./bin/bin2hdf namelist/bin2hdf_mhd.nml    # MHD 8 変数
 OMP_NUM_THREADS=2 ./bin/bin2hdf namelist/bin2hdf_vort.nml   # 渦度 2 変数
 ```
 
-旧 `hdf_convert_mem` と `hdf_convert_vort` を 1 本にした。変数の数と名前は `nvar`, `varname` で与える。
+旧コードの MHD 用と渦度用の HDF5 変換を 1 本にした。変数の数と名前は `nvar`, `varname` で与える。
 HDF5 のデータセット名と形状 (C 順で nz2 x ny2 x nx2) は旧と同じ。
 
 | 変数 | 意味 |
@@ -222,9 +219,9 @@ HDF5 のデータセット名と形状 (C 順で nz2 x ny2 x nx2) は旧と同�
 ## slice_plot (断面図)
 
 ```sh
-OMP_NUM_THREADS=8 ./bin/slice_plot namelist/slice_legacy.nml   # 旧 xyju02nt171m.f と同じ図
-./scripts/ps2png.sh xyju02nt171m.ps          # PNG (1 ページ 1 枚)
-./scripts/ps2png.sh xyju02nt171m.ps pdf      # PDF
+OMP_NUM_THREADS=8 ./bin/slice_plot namelist/slice_legacy.nml   # 旧コードの断面図と同じ図
+./scripts/ps2png.sh zxju03nt00m.ps           # PNG (1 ページ 1 枚)
+./scripts/ps2png.sh zxju03nt00m.ps pdf       # PDF
 ```
 
 1 ファイル (時刻) を 1 ページに描く。namelist は `&slice` (ファイル・格子・ページ) と `&panels` (各パネル) の 2 つ。
@@ -253,10 +250,10 @@ OMP_NUM_THREADS=8 ./bin/slice_plot namelist/slice_legacy.nml   # 旧 xyju02nt171
 | `log10:<量>`, `abs:<量>`, `neg:<量>` | 常用対数・絶対値・符号反転 (例 `log10:rho`) |
 
 * `vmin, vmax`: 色の範囲。同じ値 (既定 0, 0) なら自動 (最小〜最大)
-* `palette`: 旧 `ico` (1〜8)。3 = 旧図の配色, 8 = 青白赤 (正負のある量向け)
-* `nsmooth`: 旧 `diff2` の平滑化回数 (既定 2)
+* `palette`: 1〜8 (旧コードの配色番号と同じ)。3 = 旧図の配色, 8 = 青白赤 (正負のある量向け)
+* `nsmooth`: 旧コードと同じ 5 点平滑の回数 (既定 2)
 * `stride`: 画像の間引き。PS ファイルが大きいとき 2 にすると約 1/4
-* `vec`: `'v'` (速度) / `'b'` (磁場) / `'none'`。面内 2 成分を旧 `grap3a` と同じ流線矢印で描く。`vecmax` で規格化 (0 なら最大値), `nvec_h, nvec_v` で種点数
+* `vec`: `'v'` (速度) / `'b'` (磁場) / `'none'`。面内 2 成分を旧コードと同じ流線矢印で描く。`vecmax` で規格化 (0 なら最大値), `nvec_h, nvec_v` で種点数
 * `row, col`: ページ上の位置 (row=1 が上段)
 * `.vort` を描くときは `nvar=2, varname='par','perp', parity=1,1` (`namelist/slice_vort.nml`)
 
@@ -285,8 +282,8 @@ OMP_NUM_THREADS=8 ./bin/slice_plot namelist/slice_legacy.nml   # 旧 xyju02nt171
 
 * 枠に目盛 (`tick` [RJ] 間隔), 軸名, カラーバー, 断面位置を描く。目盛は `label_coord='jso'` (既定) で X = −x, Y = −y, Z = z (旧図のラベルと同じ向き), `'sim'` でシミュレーション座標
 * xy 面の磁場ベクトルは (Bx, By) を描く。旧コードは (Bx, −By) になっていた (z≈0 では対称性により By≈0 なので見た目はほぼ同じ)
-* 旧 `grap3a` の uy 補間式の係数の誤り ((1−Z)·R → (1−R)·Z) を修正した
-* 旧 `diff2` にあった「中央 1 行だけ平滑化しない」処理は削除した
+* 旧コードの矢印描画で、uy 補間式の係数の誤り ((1−Z)·R → (1−R)·Z) を修正した
+* 旧コードの平滑化にあった「中央 1 行だけ平滑化しない」処理は削除した
 * 画像の色は旧と同じ 4 bit/色。16 進文字列を文字バッファで組み立てるので書き出しが速い
 
 ## polar_map (極域電離圏への写像)
@@ -295,8 +292,7 @@ OMP_NUM_THREADS=8 ./bin/slice_plot namelist/slice_legacy.nml   # 旧 xyju02nt171
 OMP_NUM_THREADS=32 ./bin/polar_map namelist/polar.nml
 ```
 
-旧 `fig_h/polar` の `prodp3_ju02nt.f` (開閉境界), `prodpc5_ju02nt.f` (対流・エネルギーフラックス),
-`polar_ju02nt.f` (描画) を 1 本にした。結合済みの `m.data` を直接読むので、`sdata` の作成も中間ファイル (`.dp3`, `.dp5`) も不要。
+旧コードの極域図 (開閉境界、対流・エネルギーフラックス、描画の 3 本) を 1 本にした。結合済みの `m.data` を直接読むので、`sdata` の作成も中間ファイル (`.dp3`, `.dp5`) も不要。
 
 ### 計算方法
 
@@ -311,7 +307,7 @@ OMP_NUM_THREADS=32 ./bin/polar_map namelist/polar.nml
    方位角方向 DFT + 余緯度方向 3 重対角の直接法で解く (反復なし、境界 Φ=0)。
    `j_conv = −∇·(Σ_P E)` (一様な Pedersen 伝導度 Σ_P = 1)。旧図の「Field-Aligned Current」はこの量に相当する
 5. **開閉境界**: 写像点から磁場に沿って追跡 (2 次 Runge–Kutta)。半領域データでは z=0 面に達したら閉 (赤道面対称なので共役点に戻る)、計算領域外へ出たら開。
-   同時に旧 `prodpc5` と同じ重み r²/(r_in²+r²) で ⟨p·sqrt(p/ρ)⟩ (「Energy Flux」proxy) を赤道まで平均する
+   同時に旧コードと同じ重み r²/(r_in²+r²) で ⟨p·sqrt(p/ρ)⟩ (「Energy Flux」proxy) を赤道まで平均する
 
 写像点付近 (半径 `r_map` + 数格子) は全解像度で、磁力線追跡用の全体場 (B, ρ, p) は `stride` 間引きで読む (標準格子・stride=3 で約 4.5 GB, 読み込み約 40 GB)。追跡は OpenMP で並列。
 
@@ -336,7 +332,7 @@ OMP_NUM_THREADS=32 ./bin/polar_map namelist/polar.nml
 | `jfac` | 電流に掛ける追加の係数 (既定 1。単位換算は `&units` で行う) |
 | `jpar_delta` | J = ∇×B の差分幅 (格子間隔 h の倍数, 既定 2)。2 にすると波長 4h の数値的な細かい振動が rot で増幅されない |
 | `jpar_avg` | 写像点から磁力線に沿って (J·B)/B² を平均する長さ [RJ] (既定 4, 0 で写像点のみ)。J∥/B は磁力線に沿って保存するので平均しても物理量は変わらない |
-| `nsmooth` | 図の平滑化回数 (旧 diff2 と同じ 5 点平滑, 既定 2)。出力 .bin のデータには掛けない |
+| `nsmooth` | 図の平滑化回数 (旧コードと同じ 5 点平滑, 既定 2)。出力 .bin のデータには掛けない |
 
 ### 実装メモ: PostScript 画像の行境界
 
@@ -348,19 +344,19 @@ PostScript の画像は各行がバイト境界から始まる決まりで、4 b
 そのため差分幅を 2h にし (`jpar_delta`)、磁力線に沿って 4 RJ 平均し (`jpar_avg`)、図には旧図と同じ 5 点平滑を 2 回掛ける (`nsmooth`)。
 合成データに波長 4h の振動を加えた試験では、j_mhd の雑音/信号比が 0.28 → 0.002 になった (余緯度 17° まで)。
 
-### 旧コード (fig_h/polar) で見つかった問題
+### 旧コード (極域図) で見つかった問題
 
-| コード | 問題 | 影響 |
+| 処理 | 問題 | 影響 |
 |---|---|---|
-| prodp3 | 足元格子の点数に `ia(1)=nxg=10` を渡しており、202×202 のはずが 12×12 点しか計算していない。結果は 202×202 配列の隅 (行 191〜202, 列 1〜12) にだけ入る | 開閉境界がほぼ描かれない (polar_ju02nt.ps でも境界線が見えない)。合成データで再現を確認 |
-| prodp3 | 内側の双極子を `b0=+1` で合成しているが、シミュレーションは `b0=−1`。r ≈ 4.3 RJ で両者が打ち消し合い、追跡がそこで往復する | 開閉の判定が成り立たない |
-| prodp3 | `ardr` が未初期化 | 判定が実行環境に依存 |
-| prodpc5 | 写像点 (r=10) での速度の x, y 成分をそのまま電離圏の水平成分として使っている | z 成分が捨てられ、子午面方向の写像が正しくない。写像点の余緯度が 54.7° より大きい (足元が約 15° より低緯度) と、外向きの運動が極向きになるのに赤道向きとして描かれる (符号が逆) |
-| prodpc5 | 電場の写像を等方的な sqrt(B) の比だけで扱っている | 双極子写像は子午面方向と方位角方向で縮尺が約 2 倍違うので、渦度 (= FAC) が歪む |
-| polar | 速度に人工的な窓関数 `1/(1+R^8)` と `(1−r²)^0.25` を掛けてから rot をとっている | 窓関数の勾配で、外縁 (70° 付近) に偽の FAC のリングができる (旧図の外周の赤い帯) |
-| polar | Poisson 方程式を ADI 法で解いているが、反復パラメータ固定・最大 100 回で打ち切り。正方形全体 (極冠の外の角も含む) を解いている | 最も大きな構造 (最低次モード) は真の解の 8% にしかならない (旧ルーチンで確認)。電位図の正方形の角の等値線や外縁に偏った等値線はこのため |
-| polar | 発散なし流速を `max|u|/max|v_df|` で再規格化 | 振幅の誤りが図から分からなくなる |
-| polar | FAC を「流速の渦度 × 一様伝導度」で求めている | MHD の電流そのものではない。新コードでは MHD の J∥ を写像した値を主に描き、対流からの値は比較用に残した |
+| 開閉境界 | 足元格子の点数に `ia(1)=nxg=10` を渡しており、202×202 のはずが 12×12 点しか計算していない。結果は 202×202 配列の隅 (行 191〜202, 列 1〜12) にだけ入る | 開閉境界がほぼ描かれない (旧コードの図でも境界線が見えない)。合成データで再現を確認 |
+| 開閉境界 | 内側の双極子を `b0=+1` で合成しているが、シミュレーションは `b0=−1`。r ≈ 4.3 RJ で両者が打ち消し合い、追跡がそこで往復する | 開閉の判定が成り立たない |
+| 開閉境界 | `ardr` が未初期化 | 判定が実行環境に依存 |
+| 対流 | 写像点 (r=10) での速度の x, y 成分をそのまま電離圏の水平成分として使っている | z 成分が捨てられ、子午面方向の写像が正しくない。写像点の余緯度が 54.7° より大きい (足元が約 15° より低緯度) と、外向きの運動が極向きになるのに赤道向きとして描かれる (符号が逆) |
+| 対流 | 電場の写像を等方的な sqrt(B) の比だけで扱っている | 双極子写像は子午面方向と方位角方向で縮尺が約 2 倍違うので、渦度 (= FAC) が歪む |
+| 描画 | 速度に人工的な窓関数 `1/(1+R^8)` と `(1−r²)^0.25` を掛けてから rot をとっている | 窓関数の勾配で、外縁 (70° 付近) に偽の FAC のリングができる (旧図の外周の赤い帯) |
+| 描画 | Poisson 方程式を ADI 法で解いているが、反復パラメータ固定・最大 100 回で打ち切り。正方形全体 (極冠の外の角も含む) を解いている | 最も大きな構造 (最低次モード) は真の解の 8% にしかならない (旧ルーチンで確認)。電位図の正方形の角の等値線や外縁に偏った等値線はこのため |
+| 描画 | 発散なし流速を `max|u|/max|v_df|` で再規格化 | 振幅の誤りが図から分からなくなる |
+| 描画 | FAC を「流速の渦度 × 一様伝導度」で求めている | MHD の電流そのものではない。新コードでは MHD の J∥ を写像した値を主に描き、対流からの値は比較用に残した |
 
 ### 検証 (`test/polar_test.py`, `make test` に含む)
 
@@ -380,7 +376,7 @@ PostScript の画像は各行がバイト境界から始まる決まりで、4 b
 OMP_NUM_THREADS=16 ./bin/mag3d namelist/mag3d.nml      # → ju02nt3d_001.glb, ...
 ```
 
-荻野教授の VRML サブルーチン群 (`zvrsub*.f`) と、それを使った `zvrmag*.f` (磁力線), `zvrmpx*.f` (多重断面), `mcub*.f` (等値面), `zvrveld.f` (速度ベクトル) を 1 本にまとめた。結合済みの `m.data` を直接読み、1 時刻を 1 つの 3 次元シーンとして書き出す。
+荻野教授の VRML サブルーチン群と、それを使った旧コード (磁力線、多重断面、等値面、速度ベクトル) を 1 本にまとめた。結合済みの `m.data` を直接読み、1 時刻を 1 つの 3 次元シーンとして書き出す。
 
 ### 出力形式の選択
 
@@ -395,22 +391,22 @@ OMP_NUM_THREADS=16 ./bin/mag3d namelist/mag3d.nml      # → ju02nt3d_001.glb, .
 
 ### 描けるもの
 
-| 要素 | namelist | 旧ルーチン |
-|---|---|---|
-| 磁力線 (極域の足元格子から, 緯度 × MLT) | `fl_polar`, `fl_hemi`, `fl_lat_min/max`, `fl_nlat`, `fl_nmlt`, `fl_r_start` | ainte1 / ainte1d |
-| 磁力線 (赤道面の格子から, 両方向) | `fl_equator`, `eq_xmin` … `eq_ny` | ainte21 / ainte21d |
-| 磁力線 (任意の点から) | `fl_npt`, `fl_px/py/pz` | — |
-| 磁力線 (3 次元の格子点から。惑星に繋がらない線用) | `fl_box`, `fl_box_lo/hi`, `fl_box_n`, `fl_keep` | — |
-| 開閉境界付近の磁力線だけ選ぶ | `fl_select='ocb'` | ainte1a + zsub33d |
-| 磁力線の色 | `fl_color='topology'` (閉: 緑 / 開: 青 / 太陽風: 紫) または物理量名 | 固定色 |
-| 断面 (カラー画像, 半透明) | `pl_plane`, `pl_pos`, `pl_qty`, `pl_vmin/vmax`, `pl_alpha`, `pl_alpha_mode` | pixel1 / pixeco / pixect |
-| 多重断面 (擬似ボリューム, 3 方向まで同時) | `stk_plane(1:3)`, `stk_n`, `stk_lo/hi`, `stk_qty`, `stk_vmin/vmax`, `stk_tra`, `stk_alpha` (最大不透明度, 既定 0.4) (例: `stk_plane = 'yz','xz','xy'`)。ビューアの「多重断面」スライダーで全組の透明度を一度に変えられる (「断面」スライダーも掛かる) | zvrmpx |
-| 選択断面 (ビューアで 1 枚を選んで表示, 3 組まで) | `sel_plane`, `sel_n`, `sel_lo/hi`, `sel_qty`, `sel_vmin/vmax`, `sel_alpha`, `sel_palette` | — |
-| 等値面 | `iso_qty`, `iso_level`, `iso_color`, `iso_alpha`, `iso_stride`, `iso_max_tri` (既定 200 万。超えると自動で間引く), `iso_smooth` (取る前の平滑化回数, 既定 1) | csuba |
-| ベクトル矢印 (速度・磁場) | `arr_plane`, `arr_pos`, `arr_vec`, `arr_n` | arrow / zvrveld |
-| 枠・座標軸・目盛・タイトル・惑星 | `draw_frame`, `draw_planet`, `draw_inner`, `label_size` | linebe/lineen, symblv2, sphere1 |
-| 惑星の画像・土星の環 | `planet_texture` ('auto' / ファイル名 / 'none'), `planet_lon0`, `draw_rings`, `ring_r1/r2` | — |
-| カラーバー | ビューアが自動表示。`colorbar_3d=.true.` でシーン内にも描く | — |
+| 要素 | namelist |
+|---|---|
+| 磁力線 (極域の足元格子から, 緯度 × MLT) | `fl_polar`, `fl_hemi`, `fl_lat_min/max`, `fl_nlat`, `fl_nmlt`, `fl_r_start` |
+| 磁力線 (赤道面の格子から, 両方向) | `fl_equator`, `eq_xmin` … `eq_ny` |
+| 磁力線 (任意の点から) | `fl_npt`, `fl_px/py/pz` |
+| 磁力線 (3 次元の格子点から。惑星に繋がらない線用) | `fl_box`, `fl_box_lo/hi`, `fl_box_n`, `fl_keep` |
+| 開閉境界付近の磁力線だけ選ぶ | `fl_select='ocb'` |
+| 磁力線の色 | `fl_color='topology'` (閉: 緑 / 開: 青 / 太陽風: 紫) または物理量名 |
+| 断面 (カラー画像, 半透明) | `pl_plane`, `pl_pos`, `pl_qty`, `pl_vmin/vmax`, `pl_alpha`, `pl_alpha_mode` |
+| 多重断面 (擬似ボリューム, 3 方向まで同時) | `stk_plane(1:3)`, `stk_n`, `stk_lo/hi`, `stk_qty`, `stk_vmin/vmax`, `stk_tra`, `stk_alpha` (最大不透明度, 既定 0.4) (例: `stk_plane = 'yz','xz','xy'`)。ビューアの「多重断面」スライダーで全組の透明度を一度に変えられる (「断面」スライダーも掛かる) |
+| 選択断面 (ビューアで 1 枚を選んで表示, 3 組まで) | `sel_plane`, `sel_n`, `sel_lo/hi`, `sel_qty`, `sel_vmin/vmax`, `sel_alpha`, `sel_palette` |
+| 等値面 | `iso_qty`, `iso_level`, `iso_color`, `iso_alpha`, `iso_stride`, `iso_max_tri` (既定 200 万。超えると自動で間引く), `iso_smooth` (取る前の平滑化回数, 既定 1) |
+| ベクトル矢印 (速度・磁場) | `arr_plane`, `arr_pos`, `arr_vec`, `arr_n` |
+| 枠・座標軸・目盛・タイトル・惑星 | `draw_frame`, `draw_planet`, `draw_inner`, `label_size` |
+| 惑星の画像・土星の環 | `planet_texture` ('auto' / ファイル名 / 'none'), `planet_lon0`, `draw_rings`, `ring_r1/r2` |
+| カラーバー | ビューアが自動表示。`colorbar_3d=.true.` でシーン内にも描く |
 
 物理量の名前は slice_plot と同じ (rho, vx … bz, temp, absb, absbz, absv, beta, pdyn, log10:<量> など)。半領域データ (z≥0) は、磁力線・断面・等値面とも parity を使って z<0 側まで描く。
 `pl_plane(n)` を与えた番号には `pl_qty(n)` も必ず与える (無いとエラー。`pl_plane(2)= ..., pl_qty(1)= ...` のような添字の書き間違いを検出する)。
@@ -510,17 +506,14 @@ Cassini による木星の全球図 (PIA07782) などがある。画像は glb �
 ## テスト
 
 ```sh
-make && cd test && ./run_tests.sh [旧コードのあるディレクトリ]
+make test
 ```
 
 小さい合成データで各ツールを実行し、解析解や独立な計算と比較する (python3 + numpy が必要)。
 combine3d (通常 / big endian / 8 byte マーカー × 1, 2, 4 スレッド) は生成式の値と、vorticity は numpy で計算した値と、
 polar_map は解析解と比較する。bin2hdf (raw, HDF5) は入力と bit 単位で一致することを確認する。
-旧コード (`data_conbine3d_sxt_mem.f90`, `vorticity_ju02nt.f90`, `fig_h/`) のあるディレクトリを引数に与えると、
-旧コードを小さい格子に書き換えてビルド・実行し、その出力とも比較する
-(combine3d は bit 一致、vorticity は倍精度化のため相対 1e-4 以内)。
 物理単位への換算は bin2hdf (raw/XDMF/HDF5 属性) と slice_plot (規格化版との比) で確認する。
-旧コードがあれば slice_plot は旧・新の PostScript と PNG を `test/work/s/` に出力するので目で比較する。
+slice_plot の図は `test/work/s/new.ps` (ghostscript があれば `new.png` も) に出力されるので目で確認できる。
 
 ## 性能 (小規模テストでの実測)
 

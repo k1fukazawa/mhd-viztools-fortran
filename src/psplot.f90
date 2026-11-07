@@ -1,5 +1,5 @@
 !==============================================================================
-! psplot : PostScript plotting library (F90 version of the needed parts of sub3ahpar2.f)
+! psplot : PostScript plotting library (F90 version of the needed parts of the legacy plotting library)
 !
 !   correspondence with the legacy library
 !     xyopen  -> ps_open        plots  -> ps_page     plote -> ps_endpage

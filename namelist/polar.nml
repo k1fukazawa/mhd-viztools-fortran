@@ -1,4 +1,4 @@
-! namelist for polar_map : mapping to the polar ionosphere (legacy fig_h/polar: prodp3 + prodpc5 + polar)
+! namelist for polar_map : mapping to the polar ionosphere (replaces the three legacy polar-plot programs)
 !   computed directly from the combined data (m.data, half domain z>=0); no sdata files needed.
 &polar
   diri = './',
