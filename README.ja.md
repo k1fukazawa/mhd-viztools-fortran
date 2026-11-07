@@ -2,6 +2,8 @@
 
 [English](README.md)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24030429.svg)](https://doi.org/10.5281/zenodo.24030429)
+
 惑星磁気圏のグローバル MHD シミュレーションの出力を、結合・解析・可視化するための Fortran ツール群です。
 **故 荻野瀧樹教授が開発・使用してきた磁気圏 MHD コードの可視化ツール (断面図・極域図・VRML による 3 次元表示など) を、
 現在の計算機環境で使いやすいようにモダン化したもの**です。木星版コード (jupiter7) の出力で開発・検証していますが、
@@ -95,7 +97,9 @@ doc/        利用者マニュアル (manual_ja.md, 英語版 manual_en.md)
 
 ## 引用
 
-研究で使った場合は、[CITATION.cff](CITATION.cff) の情報 (Zenodo の DOI) で引用してください。
+研究で使った場合は、[CITATION.cff](CITATION.cff) の情報 (Zenodo DOI: [10.5281/zenodo.24030429](https://doi.org/10.5281/zenodo.24030429)) で引用してください:
+
+> Ogino, T., & FUKAZAWA, K. (2026). MHD viztools Fortran: visualization tools for planetary magnetosphere MHD simulations (Version 1.0.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.24030429
 
 ## ライセンス
 

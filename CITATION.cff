@@ -20,5 +20,5 @@ keywords:
   - Jupiter
   - Fortran
   - glTF
-# doi: 10.5281/zenodo.XXXXXXX        (Zenodo の DOI が付いたら記入 / fill in after Zenodo assigns the DOI)
-# repository-code: "https://github.com/<owner>/mhd-viztools-fortran"
+doi: 10.5281/zenodo.24030429
+repository-code: "https://github.com/k1fukazawa/mhd-viztools-fortran"

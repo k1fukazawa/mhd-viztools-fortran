@@ -2,6 +2,8 @@
 
 [日本語](README.ja.md)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24030429.svg)](https://doi.org/10.5281/zenodo.24030429)
+
 A set of Fortran tools to combine, analyse and visualize the output of global MHD simulations of planetary
 magnetospheres. **They are a modernized version of the visualization tools developed and used by the late Prof. Tatsuki Ogino
 for his magnetospheric MHD codes** (slice plots, polar ionosphere plots, 3-D display with VRML, etc.), rewritten to be
@@ -95,7 +97,9 @@ We gratefully acknowledge Prof. Ogino, who laid the foundation of these tools.
 
 ## Citation
 
-If you use this software in your research, please cite it using the information in [CITATION.cff](CITATION.cff) (Zenodo DOI).
+If you use this software in your research, please cite it using the information in [CITATION.cff](CITATION.cff) (Zenodo DOI: [10.5281/zenodo.24030429](https://doi.org/10.5281/zenodo.24030429)):
+
+> Ogino, T., & FUKAZAWA, K. (2026). MHD viztools Fortran: visualization tools for planetary magnetosphere MHD simulations (Version 1.0.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.24030429
 
 ## License
 
