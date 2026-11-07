@@ -1,0 +1,43 @@
+! polar_map 用 namelist : 極域電離圏への写像 (旧 fig_h/polar の prodp3 + prodpc5 + polar)
+!   結合済みデータ (m.data, z>=0 の半領域) から直接計算する。sdata の作成は不要。
+&polar
+  diri = './',
+  prefix = 'ju03nt', suffix = 'm.data', ntap = 0, nfiles = 1, nstep = 1, ndigit = 3,
+  title_head = 'Bz = 0.105 nT  Dyn = 0.01 nPa  t =', t0 = 427.5, dt = 2.5, t_unit = ' hours',
+  header = 'High resolution of Jovian Magnetosphere',
+  ! データの格子 (m.data)
+  nx2 = 3002, ny2 = 2002, nz2 = 1002, nvar = 8, nxp = 500, h = 0.15,
+  half_domain = .true.,          ! z>=0 のみ。旧 sdata のような全領域データなら .false.
+  ! 物理パラメータ (constants.f90 と合わせる)
+  b0 = -1.0, r_in = 7.0, omega = 1.38e-4,
+  subtract_corot = .true.,       ! 対流から剛体共回転を引く (.false. で全速度)
+  r_map = 10.0,                  ! この半径の球面から電離圏へ双極子で写す [RJ]
+  r_valid = 8.0,
+  ! 電離圏の格子と描画
+  hemisphere = 'south',          ! 'north' / 'south' (半領域データでは鏡映で同じ結果)
+  colat_max = 20.0, ncolat = 80, nmlt = 96,
+  ! 磁力線追跡 (開閉境界, エネルギーフラックス proxy)
+  do_trace = .true., stride = 3, trace_maxlen = 5000.0,
+  ! 色範囲 (0 なら自動)。単位は units グループ: j [uA/m^2], eflux [mW/m^2], umax [km/s]
+  sigma_p = 1.0,                 ! j_conv 用の一様ペダーセン伝導度 [S]
+  jmhd_max = 0.0, jconv_max = 0.0, eflux_max = 0.0, umax = 0.0,
+  psfile = 'polar_ju03nt.ps', ps_per_file = .false.
+/
+
+! ---- 物理単位 (全ツール共通, mhdunits)。色範囲などはこの単位で与える
+!   n [cm^-3], v [km/s], p [nPa], B [nT], T [eV], J [uA/m^2], phi [kV], omega [1/s]
+!   phys_units = .false. で規格化量のまま (旧ツールと同じ値)
+&units
+  phys_units = .true.,
+  planet = 'jupiter',            ! 'jupiter' / 'saturn' / 'earth' / 'custom'
+  !   各惑星版コードの規格化定数が既定値として入っている (距離の単位も RJ / RS / RE になる)
+  !   jupiter: ns=1e10, bs=4.2e-4, xs=7.14e7,  vs=9.167e7, ts=0.779, ps=0.1403
+  !   saturn : ns=1e10, bs=2.0e-5, xs=6.004e7, vs=4.359e6, ts=13.77, ps=3.185e-4
+  !   earth  : ns=1e10, bs=3.12e-5, xs=6.378e6, vs=6.80e6, ts=0.937, ps=7.75e-4
+  ! 値を変えるとき: 基本量 (数密度 [m^-3], 赤道表面の磁場 [T], 惑星半径 [m], イオン質量 [amu])
+  !   を与えれば vs, ts, ps, temps は自動で計算する。導出量を個別に与えればその値を使う
+  ! ns = 1.0e10, bs = 4.2e-4, xs = 7.14e7, ion_mass = 1.0,
+  ! rhos = 1.67e-17, vs = 9.167e7, ts = 0.779, ps = 0.1403, temps = 8.76e7,
+  ! length_unit = 'RJ',          ! 図の距離の単位
+  temp_unit = 'eV'               ! 'eV', 'keV', 'K'
+/

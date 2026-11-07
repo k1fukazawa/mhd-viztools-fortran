@@ -1,0 +1,21 @@
+! combine3d 用 namelist (旧 data_conbine3d_sxt_mem.f90 と同じ設定)
+!   ランク毎ファイル: diri//prefix_in//NNN//suffix_in//RRRR  (例 ju03nt000.tdata.0000)
+!   出力ファイル    : diro//prefix_out//NNN//suffix_out     (例 ju03nt000m.data)
+&combine
+  npex = 8, npey = 16, npez = 16,      ! ランク分割数 (rank = i + npex*(j + npey*k))
+  nxx = 750, nyy = 250, nzz = 125,     ! 1 ランクの格子数 (ゴースト無し)
+  nb  = 8,                             ! 変数の数 (rho,vx,vy,vz,p,bx,by,bz)
+  ! 切り出し範囲 (全体格子 6000x4000x2000 の中の開始位置と大きさ)
+  !   旧コードの mx=3000,my=2000,mz=1000,nxp=1000,mxp=500 と同じ
+  ox0 = 1000, oy0 = 1000, oz0 = 1,
+  onx = 3002, ony = 2002, onz = 1002,
+  diri = './',                         ! ランク毎ファイルのディレクトリ
+  diro = './',                         ! 出力ディレクトリ
+  prefix_in  = 'ju03nt',
+  prefix_out = 'ju03nt',
+  suffix_in  = '.tdata.',
+  suffix_out = 'm.data',
+  ntap = 0, nfiles = 1, nstep = 1,     ! ファイル番号 ntap, ntap+nstep, ... を nfiles 個
+  ndigit = 3, rank_digits = 4,
+  overlap = .true.                     ! 書き出しと次スラブの読み込みを重ねる
+/

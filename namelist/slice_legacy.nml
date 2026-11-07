@@ -1,0 +1,51 @@
+! namelist for slice_plot : the same plot as the legacy fig_h/xyju02nt171m.f
+!   top row   : B (|Bz|, |B|) + magnetic field vectors
+!   bottom row: T = p/rho + velocity vectors
+&slice
+  diri = './',
+  prefix = 'ju03nt', suffix = 'm.data',
+  ntap = 0, nfiles = 1, nstep = 1, ndigit = 3,
+  ! titles: give title(i) for each file, or use the automatic title below
+  title_head = 'Dyn = 0.01 nPa, IMF = 0.105 nT, t =', t0 = 427.5, dt = 2.5, t_unit = ' h',
+  header = 'High resolution Jovian Magnetosphere',
+  psfile = 'zxju03nt00m.ps', ps_per_file = .false.,
+  nx2 = 3002, ny2 = 2002, nz2 = 1002, nvar = 8, h = 0.15, nxp = 500,
+  mirror_z = .true.,
+  label_coord = 'jso',     ! ticks X=-x, Y=-y, Z=z (same orientation as the legacy plot)
+  tick = 50.0
+/
+&panels
+  npanel = 4,
+  plane   = 'xz',     'yz',     'xz',      'yz',
+  pos     = 0.0,      0.0,      0.0,       0.0,        ! y=0 plane, x=0 plane
+  qty     = 'absbz',  'absb',   'temp',    'temp',
+  vmin    = 0.0,      0.0,      0.0,       0.0,
+  vmax    = 10.5,     10.5,     161.2,    161.2,     ! [nT] [nT] [eV] [eV]
+  palette = 3,        3,        3,         3,
+  nsmooth = 2,        2,        2,         2,
+  vec     = 'b',      'b',      'v',       'v',
+  vecmax  = 10.5,     10.5,     630.7,     630.7,      ! [nT] [nT] [km/s] [km/s]
+  nvec_h  = 40,       20,       40,        20,
+  nvec_v  = 20,       20,       20,        20,
+  row     = 1,        1,        2,         2,
+  col     = 1,        2,        1,         2,
+  label   = 'B',      'B',      'T',       'T',
+/
+
+! ---- physical units (common to all tools, mhdunits). Colour ranges etc. are given in these units
+!   n [cm^-3], v [km/s], p [nPa], B [nT], T [eV], J [uA/m^2], phi [kV], omega [1/s]
+!   phys_units = .false. keeps normalized values (same as the legacy tools)
+&units
+  phys_units = .true.,
+  planet = 'jupiter',            ! 'jupiter' / 'saturn' / 'earth' / 'custom'
+  !   the normalization constants of each planet's MHD code are built in (distance unit RJ / RS / RE)
+  !   jupiter: ns=1e10, bs=4.2e-4, xs=7.14e7,  vs=9.167e7, ts=0.779, ps=0.1403
+  !   saturn : ns=1e10, bs=2.0e-5, xs=6.004e7, vs=4.359e6, ts=13.77, ps=3.185e-4
+  !   earth  : ns=1e10, bs=3.12e-5, xs=6.378e6, vs=6.80e6, ts=0.937, ps=7.75e-4
+  ! to change them: give the basic quantities (number density [m^-3], equatorial surface field [T],
+  !   planetary radius [m], ion mass [amu]); vs, ts, ps, temps are computed. Derived values given are used as is
+  ! ns = 1.0e10, bs = 4.2e-4, xs = 7.14e7, ion_mass = 1.0,
+  ! rhos = 1.67e-17, vs = 9.167e7, ts = 0.779, ps = 0.1403, temps = 8.76e7,
+  ! length_unit = 'RJ',          ! distance unit of the plots
+  temp_unit = 'eV'               ! 'eV', 'keV', 'K'
+/

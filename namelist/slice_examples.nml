@@ -1,0 +1,51 @@
+! namelist for slice_plot : examples
+!   - a slice is chosen by plane ('xy','xz','yz') and pos (distance from the planet center, simulation coordinates)
+!       simulation coordinates: x positive anti-sunward, y, z (z>0 north)
+!       with label_coord='jso' the ticks show X=-x (positive sunward), Y=-y, Z=z
+!   - quantity qty: rho vx vy vz p bx by bz temp absb absbz absv beta pdyn
+!                 log10:<qty>  abs:<qty>  neg:<qty>
+!   - plotted range h_lo/h_hi (horizontal), v_lo/v_hi (vertical) [simulation coordinates]
+!   - vmin=vmax (default 0,0): automatic colour range
+&slice
+  datafile(1) = 'ju02nt171m.data',
+  datafile(2) = 'ju02nt172m.data',
+  title(1) = 't = 427.50 h', title(2) = 't = 430.00 h',
+  psfile = 'zoom.ps', ps_per_file = .true.,     ! zoom_001.ps, zoom_002.ps
+  nx2 = 3002, ny2 = 2002, nz2 = 1002, h = 0.15, nxp = 500,
+  tick = 20.0,
+  dump_planes = .false.                          ! .true.: also write the plotted planes as .bin/.txt
+/
+&panels
+  npanel = 4,
+  plane   = 'xz',        'xy',        'yz',      'xy',
+  pos     = 0.0,         5.0,         30.0,      0.0,
+  qty     = 'log10:rho', 'beta',      'vz',      'temp',
+  vmin    = -4.0,        0.0,         -91.7,     0.0,      ! log10 [cm^-3], beta, [km/s], [eV]
+  vmax    =  0.0,        0.0,          91.7,     161.2,
+  palette = 3,           4,           8,         3,
+  vec     = 'b',         'none',      'v',       'v',
+  h_lo    = -100.0,      -100.0,      -80.0,     -150.0,
+  h_hi    =  100.0,       100.0,       80.0,      300.0,
+  v_lo    = -60.0,       -100.0,      -80.0,     -150.0,
+  v_hi    =  60.0,        100.0,       80.0,      150.0,
+  row     = 1,           1,           2,         2,
+  col     = 1,           2,           1,         2,
+/
+
+! ---- physical units (common to all tools, mhdunits). Colour ranges etc. are given in these units
+!   n [cm^-3], v [km/s], p [nPa], B [nT], T [eV], J [uA/m^2], phi [kV], omega [1/s]
+!   phys_units = .false. keeps normalized values (same as the legacy tools)
+&units
+  phys_units = .true.,
+  planet = 'jupiter',            ! 'jupiter' / 'saturn' / 'earth' / 'custom'
+  !   the normalization constants of each planet's MHD code are built in (distance unit RJ / RS / RE)
+  !   jupiter: ns=1e10, bs=4.2e-4, xs=7.14e7,  vs=9.167e7, ts=0.779, ps=0.1403
+  !   saturn : ns=1e10, bs=2.0e-5, xs=6.004e7, vs=4.359e6, ts=13.77, ps=3.185e-4
+  !   earth  : ns=1e10, bs=3.12e-5, xs=6.378e6, vs=6.80e6, ts=0.937, ps=7.75e-4
+  ! to change them: give the basic quantities (number density [m^-3], equatorial surface field [T],
+  !   planetary radius [m], ion mass [amu]); vs, ts, ps, temps are computed. Derived values given are used as is
+  ! ns = 1.0e10, bs = 4.2e-4, xs = 7.14e7, ion_mass = 1.0,
+  ! rhos = 1.67e-17, vs = 9.167e7, ts = 0.779, ps = 0.1403, temps = 8.76e7,
+  ! length_unit = 'RJ',          ! distance unit of the plots
+  temp_unit = 'eV'               ! 'eV', 'keV', 'K'
+/

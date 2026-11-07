@@ -1,0 +1,51 @@
+! slice_plot 用 namelist : 使い方の例
+!   - 断面は plane ('xy','xz','yz') と pos (惑星中心からの距離 [RJ], シミュレーション座標) で選ぶ
+!       シミュレーション座標: x は反太陽方向が正, y, z (z>0 が北)
+!       label_coord='jso' のとき目盛は X=-x (太陽向き正), Y=-y, Z=z で表示
+!   - 物理量 qty: rho vx vy vz p bx by bz temp absb absbz absv beta pdyn
+!                 log10:<量>  abs:<量>  neg:<量>
+!   - 表示範囲 h_lo/h_hi (横軸), v_lo/v_hi (縦軸) [RJ, シミュレーション座標]
+!   - vmin=vmax (既定 0,0) で色範囲を自動
+&slice
+  datafile(1) = 'ju02nt171m.data',
+  datafile(2) = 'ju02nt172m.data',
+  title(1) = 't = 427.50 h', title(2) = 't = 430.00 h',
+  psfile = 'zoom.ps', ps_per_file = .true.,     ! zoom_001.ps, zoom_002.ps
+  nx2 = 3002, ny2 = 2002, nz2 = 1002, h = 0.15, nxp = 500,
+  tick = 20.0,
+  dump_planes = .false.                          ! .true. で描画面を .bin/.txt でも出力
+/
+&panels
+  npanel = 4,
+  plane   = 'xz',        'xy',        'yz',      'xy',
+  pos     = 0.0,         5.0,         30.0,      0.0,
+  qty     = 'log10:rho', 'beta',      'vz',      'temp',
+  vmin    = -4.0,        0.0,         -91.7,     0.0,      ! log10 [cm^-3], beta, [km/s], [eV]
+  vmax    =  0.0,        0.0,          91.7,     161.2,
+  palette = 3,           4,           8,         3,
+  vec     = 'b',         'none',      'v',       'v',
+  h_lo    = -100.0,      -100.0,      -80.0,     -150.0,
+  h_hi    =  100.0,       100.0,       80.0,      300.0,
+  v_lo    = -60.0,       -100.0,      -80.0,     -150.0,
+  v_hi    =  60.0,        100.0,       80.0,      150.0,
+  row     = 1,           1,           2,         2,
+  col     = 1,           2,           1,         2,
+/
+
+! ---- 物理単位 (全ツール共通, mhdunits)。色範囲などはこの単位で与える
+!   n [cm^-3], v [km/s], p [nPa], B [nT], T [eV], J [uA/m^2], phi [kV], omega [1/s]
+!   phys_units = .false. で規格化量のまま (旧ツールと同じ値)
+&units
+  phys_units = .true.,
+  planet = 'jupiter',            ! 'jupiter' / 'saturn' / 'earth' / 'custom'
+  !   各惑星版コードの規格化定数が既定値として入っている (距離の単位も RJ / RS / RE になる)
+  !   jupiter: ns=1e10, bs=4.2e-4, xs=7.14e7,  vs=9.167e7, ts=0.779, ps=0.1403
+  !   saturn : ns=1e10, bs=2.0e-5, xs=6.004e7, vs=4.359e6, ts=13.77, ps=3.185e-4
+  !   earth  : ns=1e10, bs=3.12e-5, xs=6.378e6, vs=6.80e6, ts=0.937, ps=7.75e-4
+  ! 値を変えるとき: 基本量 (数密度 [m^-3], 赤道表面の磁場 [T], 惑星半径 [m], イオン質量 [amu])
+  !   を与えれば vs, ts, ps, temps は自動で計算する。導出量を個別に与えればその値を使う
+  ! ns = 1.0e10, bs = 4.2e-4, xs = 7.14e7, ion_mass = 1.0,
+  ! rhos = 1.67e-17, vs = 9.167e7, ts = 0.779, ps = 0.1403, temps = 8.76e7,
+  ! length_unit = 'RJ',          ! 図の距離の単位
+  temp_unit = 'eV'               ! 'eV', 'keV', 'K'
+/

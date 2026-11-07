@@ -1,0 +1,76 @@
+! namelist for mag3d : 3-D visualization (successor of the legacy VRML tools zvrmag*/zvrmpx*/mcub*)
+!   all positions and ranges in simulation coordinates centered on the planet [planetary radii] (x: anti-sunward, z: north).
+!   output: <outbase>.glb (default) / <outbase>.x3d + png images (out_x3d=.true.)
+!   view with viewer/viewer.html (glb) / viewer/x3d_view.html (x3d and legacy .wrl)
+&mag3d
+  diri = './', prefix = 'ju03nt', suffix = 'm.data',
+  ntap = 0, nfiles = 1, nstep = 1, ndigit = 3,
+  title_head = 'Bz = 0.105 nT  Dyn = 0.01 nPa  t =', t0 = 427.5, dt = 2.5, t_unit = ' h',
+  outbase = 'ju03nt3d', out_glb = .true., out_x3d = .false.,
+  ! ---- data (m.data, half domain z>=0)
+  nx2 = 3002, ny2 = 2002, nz2 = 1002, nvar = 8, nxp = 500, h = 0.15, half_domain = .true.,
+  stride = 4,                    ! thinning of the global field (4: 751x501x251, 0.38 GB per variable)
+  r_fine = 15.0,                 ! full resolution within 15 RJ of the planet
+  box_lo = -150.0, -150.0, 0.0, box_hi = 300.0, 150.0, 150.0,
+  b0 = -1.0, r_in = 7.0,
+  ! ---- display
+  coord = 'jso',                 ! display coordinates X = -x (sunward), Y = -y, Z = z
+  bg = 0.0, 0.0, 0.0, draw_frame = .true., draw_planet = .true., label_size = 6.0,
+  planet_texture = 'auto',       ! planet image: 'auto' (textures/<planet>.jpg), a file name, 'none'
+  planet_lon0 = 0.0,             ! rotation of image longitude 0 from the sunward direction [deg]
+  ! draw_rings = .true.,         ! Saturn's rings (when planet='saturn')
+  colorbar_3d = .false.,         ! .true.: colour bars also inside the 3-D scene (for X3D, Blender)
+  ! ---- field lines: from polar foot points (legacy ainte1d)
+  fl_polar = .true., fl_hemi = 'both', fl_lat_min = 70.0, fl_lat_max = 88.0,
+  fl_nlat = 10, fl_nmlt = 24, fl_r_start = 10.0, fl_dipole_part = .true.,
+  fl_select = 'all',             ! 'ocb': only lines near the open-closed boundary (legacy zsub33d)
+  fl_color = 'topology',         ! closed: green, open: blue, solar wind: magenta / or a quantity name
+  ! ---- field lines: from a 3-D grid of points (lines not connected to the planet: solar wind, loops, ...)
+  ! fl_box = .true., fl_box_lo = -60.0, -60.0, -30.0, fl_box_hi = 150.0, 60.0, 30.0, fl_box_n = 8, 6, 3,
+  ! fl_keep = 'unconnected',     ! which lines from the equator / points / 3-D grid are kept:
+  !                              ! 'all','unconnected','connected','closed','open','solarwind','detached'
+  ! ---- field lines: from the equatorial plane (legacy ainte21d)
+  fl_equator = .false., eq_xmin = -40.0, eq_xmax = 150.0, eq_nx = 12, eq_ymin = -60.0, eq_ymax = 60.0, eq_ny = 7,
+  ! ---- slices (legacy pixel1). pl_alpha_mode='value': smaller values more transparent, as legacy pixect
+  pl_plane(1) = 'xz', pl_pos(1) = 0.0, pl_qty(1) = 'temp', pl_vmin(1) = 0.0, pl_vmax(1) = 161.2,   ! [eV]
+  pl_alpha(1) = 0.85,
+  ! pl_plane(2) = 'xy', pl_pos(2) = 0.0, pl_qty(2) = 'log10:rho', pl_alpha_mode(2) = 'value', pl_tra(2) = 2.0,
+  pl_plane(2) = 'xy', pl_pos(2) = 0.0, pl_qty(2) = 'temp', pl_vmin(2) = 0.0, pl_vmax(2) = 161.2,   ! [eV]
+  pl_alpha(2) = 0.85,
+  ! ---- stacked slices (legacy zvrmpx: parallel planes as a pseudo volume). Up to 3 directions at once
+  !      (for one set simply stk_plane = 'yz', stk_n = 11, ...)
+  stk_plane = 'yz', 'xz', 'xy',
+  stk_n     = 11,     7,      5,
+  stk_lo    = -50.0, -90.0,  -40.0,
+  stk_hi    = 250.0,  90.0,   40.0,
+  stk_qty   = 'temp', 'temp', 'temp',
+  stk_vmin  = 0.0,    0.0,    0.0,
+  stk_vmax  = 161.2,  161.2,  161.2,          ! [eV] (vmin=vmax: automatic for each set)
+  stk_tra   = 2.0,    2.0,    2.0,
+  stk_alpha = 0.4,    0.4,    0.4,            ! maximum opacity (smaller for more planes; adjustable in the viewer)
+  ! ---- selectable slices: sel_n parallel planes; the viewer slider shows one of them (up to 3 sets)
+  ! sel_plane(1) = 'yz', sel_n(1) = 21, sel_lo(1) = -50.0, sel_hi(1) = 250.0, sel_qty(1) = 'temp',
+  ! sel_vmin(1) = 0.0, sel_vmax(1) = 300.0, sel_alpha(1) = 0.9,
+  ! ---- isosurfaces (legacy csuba / mcub). Thinned automatically above iso_max_tri triangles (default 2 million)
+  iso_qty(1) = 'temp', iso_level(1) = 43.8, iso_color(:,1) = 1.0, 0.5, 0.2, iso_alpha(1) = 0.4,
+  ! ---- velocity vectors (legacy zvrveld)
+  ! arr_plane = 'xy', arr_pos = 0.0, arr_vec = 'v', arr_n = 40,
+/
+
+! ---- physical units (common to all tools, mhdunits). Colour ranges etc. are given in these units
+!   n [cm^-3], v [km/s], p [nPa], B [nT], T [eV], J [uA/m^2], phi [kV], omega [1/s]
+!   phys_units = .false. keeps normalized values (same as the legacy tools)
+&units
+  phys_units = .true.,
+  planet = 'jupiter',            ! 'jupiter' / 'saturn' / 'earth' / 'custom'
+  !   the normalization constants of each planet's MHD code are built in (distance unit RJ / RS / RE)
+  !   jupiter: ns=1e10, bs=4.2e-4, xs=7.14e7,  vs=9.167e7, ts=0.779, ps=0.1403
+  !   saturn : ns=1e10, bs=2.0e-5, xs=6.004e7, vs=4.359e6, ts=13.77, ps=3.185e-4
+  !   earth  : ns=1e10, bs=3.12e-5, xs=6.378e6, vs=6.80e6, ts=0.937, ps=7.75e-4
+  ! to change them: give the basic quantities (number density [m^-3], equatorial surface field [T],
+  !   planetary radius [m], ion mass [amu]); vs, ts, ps, temps are computed. Derived values given are used as is
+  ! ns = 1.0e10, bs = 4.2e-4, xs = 7.14e7, ion_mass = 1.0,
+  ! rhos = 1.67e-17, vs = 9.167e7, ts = 0.779, ps = 0.1403, temps = 8.76e7,
+  ! length_unit = 'RJ',          ! distance unit of the plots
+  temp_unit = 'eV'               ! 'eV', 'keV', 'K'
+/

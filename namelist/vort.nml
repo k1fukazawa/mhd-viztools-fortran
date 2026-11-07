@@ -1,0 +1,14 @@
+! namelist for vorticity (same settings as the legacy vorticity_ju02nt.f90)
+&vort
+  nx2 = 3002, ny2 = 2002, nz2 = 1002, nb = 8,
+  hx = 0.15, hy = 0.15, hz = 0.15,
+  iv  = 2, 3, 4,                       ! variable numbers of vx, vy, vz
+  ibf = 6, 7, 8,                       ! variable numbers of Bx, By, Bz
+  diri = './',
+  diro = './',
+  prefix = 'ju03nt', suffix_in = 'm.data', suffix_out = '.vort',
+  ntap = 0, nfiles = 1, nstep = 1, ndigit = 3,
+  ! quantities to output (written as variables 1,2,... in this order)
+  out_par = .true., out_perp = .true.,
+  out_wx = .false., out_wy = .false., out_wz = .false., out_wmag = .false.
+/

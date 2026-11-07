@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "MHD viztools Fortran: visualization tools for planetary magnetosphere MHD simulations"
+abstract: "Fortran tools (Fortran 2008 + OpenMP) to combine, analyse and visualize the output of global MHD simulations of planetary magnetospheres (Jupiter, Saturn, Earth): combination of per-rank output, vorticity, HDF5/XDMF conversion, slice plots, mapping to the polar ionosphere (field-aligned currents, convection, open-closed boundary) and 3-D visualization (field lines, slices, isosurfaces) in glTF/X3D with a browser viewer. A modernized version of the visualization tools developed by the late Prof. Tatsuki Ogino, whose basic parts were previously published on the web, together with improvements and additional tools by K. FUKAZAWA."
+type: software
+version: 1.0.0
+date-released: 2026-11-07
+license: MIT
+authors:
+  - family-names: Ogino
+    given-names: Tatsuki
+  - family-names: FUKAZAWA
+    given-names: Keiichiro
+    affiliation: "Research Institute for Humanity and Nature"
+    orcid: "https://orcid.org/0000-0002-4862-6411"
+keywords:
+  - magnetosphere
+  - MHD simulation
+  - visualization
+  - Jupiter
+  - Fortran
+  - glTF
+# doi: 10.5281/zenodo.XXXXXXX        (Zenodo の DOI が付いたら記入 / fill in after Zenodo assigns the DOI)
+# repository-code: "https://github.com/<owner>/mhd-viztools-fortran"

@@ -1,0 +1,21 @@
+! namelist for combine3d (same settings as the legacy data_conbine3d_sxt_mem.f90)
+!   per-rank files: diri//prefix_in//NNN//suffix_in//RRRR  (e.g. ju03nt000.tdata.0000)
+!   output file    : diro//prefix_out//NNN//suffix_out     (e.g. ju03nt000m.data)
+&combine
+  npex = 8, npey = 16, npez = 16,      ! number of ranks (rank = i + npex*(j + npey*k))
+  nxx = 750, nyy = 250, nzz = 125,     ! grid points per rank (no ghost cells)
+  nb  = 8,                             ! number of variables (rho,vx,vy,vz,p,bx,by,bz)
+  ! output region (start and size in the global 6000x4000x2000 grid)
+  !   same as mx=3000,my=2000,mz=1000,nxp=1000,mxp=500 of the legacy code
+  ox0 = 1000, oy0 = 1000, oz0 = 1,
+  onx = 3002, ony = 2002, onz = 1002,
+  diri = './',                         ! directory of the per-rank files
+  diro = './',                         ! output directory
+  prefix_in  = 'ju03nt',
+  prefix_out = 'ju03nt',
+  suffix_in  = '.tdata.',
+  suffix_out = 'm.data',
+  ntap = 0, nfiles = 1, nstep = 1,     ! nfiles files numbered ntap, ntap+nstep, ...
+  ndigit = 3, rank_digits = 4,
+  overlap = .true.                     ! overlap writing with reading the next slab
+/

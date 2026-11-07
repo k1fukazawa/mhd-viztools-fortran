@@ -1,0 +1,31 @@
+! namelist for bin2hdf : 2 vorticity variables (same as the legacy hdf_convert_vort)
+&bin2hdf
+  nx2 = 3002, ny2 = 2002, nz2 = 1002, nvar = 2,
+  varname = 'ParaVort', 'PerpVort',
+  varunit = 'omega', 'omega',     ! [1/s]
+  diri = './',
+  diro = './',
+  prefix = 'ju03nt', suffix_in = '.vort', suffix_out = 'v.h5', suffix_xmf = 'v.xmf',
+  ntap = 0, nfiles = 1, nstep = 1, ndigit = 3,
+  h = 0.15, nxp = 500,
+  origin = 'legacy', filetype = 'native', out_format = 'hdf5',
+  nslab = 32, compress = 0, overlap = .true.
+/
+
+! ---- physical units (common to all tools, mhdunits). Colour ranges etc. are given in these units
+!   n [cm^-3], v [km/s], p [nPa], B [nT], T [eV], J [uA/m^2], phi [kV], omega [1/s]
+!   phys_units = .false. keeps normalized values (same as the legacy tools)
+&units
+  phys_units = .true.,
+  planet = 'jupiter',            ! 'jupiter' / 'saturn' / 'earth' / 'custom'
+  !   the normalization constants of each planet's MHD code are built in (distance unit RJ / RS / RE)
+  !   jupiter: ns=1e10, bs=4.2e-4, xs=7.14e7,  vs=9.167e7, ts=0.779, ps=0.1403
+  !   saturn : ns=1e10, bs=2.0e-5, xs=6.004e7, vs=4.359e6, ts=13.77, ps=3.185e-4
+  !   earth  : ns=1e10, bs=3.12e-5, xs=6.378e6, vs=6.80e6, ts=0.937, ps=7.75e-4
+  ! to change them: give the basic quantities (number density [m^-3], equatorial surface field [T],
+  !   planetary radius [m], ion mass [amu]); vs, ts, ps, temps are computed. Derived values given are used as is
+  ! ns = 1.0e10, bs = 4.2e-4, xs = 7.14e7, ion_mass = 1.0,
+  ! rhos = 1.67e-17, vs = 9.167e7, ts = 0.779, ps = 0.1403, temps = 8.76e7,
+  ! length_unit = 'RJ',          ! distance unit of the plots
+  temp_unit = 'eV'               ! 'eV', 'keV', 'K'
+/

@@ -1,0 +1,36 @@
+! slice_plot 用 namelist : 渦度ファイル (.vort, 2 変数) を描く例
+&slice
+  diri = './',
+  prefix = 'ju03nt', suffix = '.vort', ntap = 0, nfiles = 1,
+  psfile = 'vort.ps',
+  nx2 = 3002, ny2 = 2002, nz2 = 1002, nvar = 2, h = 0.15, nxp = 500,
+  varname = 'par', 'perp',
+  varunit = 'omega', 'omega',  ! 渦度 [1/s] (規格化量 1/ts から換算)
+  parity  = 1, 1,             ! z 鏡映: par, perp とも対称
+/
+&panels
+  npanel = 2,
+  plane = 'xy', 'yz', pos = 0.0, 0.0,
+  qty   = 'par', 'perp',
+  palette = 8, 3,
+  vmin = -1.28e-4, 0.0, vmax = 1.28e-4, 1.28e-4,   ! [1/s]
+  row = 1, 1, col = 1, 2,
+/
+
+! ---- 物理単位 (全ツール共通, mhdunits)。色範囲などはこの単位で与える
+!   n [cm^-3], v [km/s], p [nPa], B [nT], T [eV], J [uA/m^2], phi [kV], omega [1/s]
+!   phys_units = .false. で規格化量のまま (旧ツールと同じ値)
+&units
+  phys_units = .true.,
+  planet = 'jupiter',            ! 'jupiter' / 'saturn' / 'earth' / 'custom'
+  !   各惑星版コードの規格化定数が既定値として入っている (距離の単位も RJ / RS / RE になる)
+  !   jupiter: ns=1e10, bs=4.2e-4, xs=7.14e7,  vs=9.167e7, ts=0.779, ps=0.1403
+  !   saturn : ns=1e10, bs=2.0e-5, xs=6.004e7, vs=4.359e6, ts=13.77, ps=3.185e-4
+  !   earth  : ns=1e10, bs=3.12e-5, xs=6.378e6, vs=6.80e6, ts=0.937, ps=7.75e-4
+  ! 値を変えるとき: 基本量 (数密度 [m^-3], 赤道表面の磁場 [T], 惑星半径 [m], イオン質量 [amu])
+  !   を与えれば vs, ts, ps, temps は自動で計算する。導出量を個別に与えればその値を使う
+  ! ns = 1.0e10, bs = 4.2e-4, xs = 7.14e7, ion_mass = 1.0,
+  ! rhos = 1.67e-17, vs = 9.167e7, ts = 0.779, ps = 0.1403, temps = 8.76e7,
+  ! length_unit = 'RJ',          ! 図の距離の単位
+  temp_unit = 'eV'               ! 'eV', 'keV', 'K'
+/

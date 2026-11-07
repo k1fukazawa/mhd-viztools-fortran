@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X3D / VRML Viewer</title>
+<!--
+  Page for viewing X3D (.x3d) and legacy VRML (.wrl) in a browser (uses X_ITE).
+    via an http server:  x3d_view.html?file=demo.x3d      (put the .png textures in the same place)
+    e.g. in the directory of the files:  python3 -m http.server 8000
+        → http://localhost:8000/x3d_view.html?file=40.wrl
+  A local file can also be chosen with "Open file" (suited to .wrl without external textures).
+  X_ITE is loaded from a CDN (jsdelivr), so an internet connection is needed.
+-->
+<script src="https://cdn.jsdelivr.net/npm/x_ite@16.5.1/dist/x_ite.min.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; color: #e8eaf0;
+               font: 13px system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif; }
+  x3d-canvas { position: fixed; inset: 0; width: 100%; height: 100%; }
+  #bar { position: fixed; top: 8px; left: 8px; background: rgba(20,24,32,.85); padding: 6px 10px; border-radius: 6px; }
+  button { background: #2a3142; color: #e8eaf0; border: 1px solid #3c4559; border-radius: 5px; padding: 3px 8px; cursor: pointer; }
+</style>
+</head>
+<body>
+<x3d-canvas id="c" splashScreen="false" contextMenu="true"></x3d-canvas>
+<div id="bar">
+  <input type="file" id="file" accept=".x3d,.x3dv,.wrl,.x3dz,.wrz,.gz" style="display:none">
+  <button id="open">Open file</button> <span id="name"></span>
+</div>
+<script>
+  const canvas = document.getElementById('c');
+  const name = document.getElementById('name');
+  const f = new URLSearchParams(location.search).get('file');
+  if (f) { canvas.setAttribute('src', f); name.textContent = f; }
+  document.getElementById('open').onclick = () => document.getElementById('file').click();
+  document.getElementById('file').onchange = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const url = URL.createObjectURL(file);
+    canvas.browser.loadURL(new X3D.MFString(url)).catch(err => alert(err));
+    name.textContent = file.name;
+  };
+</script>
+</body>
+</html>

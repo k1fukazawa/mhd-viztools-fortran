@@ -1,0 +1,14 @@
+! vorticity 用 namelist (旧 vorticity_ju02nt.f90 と同じ設定)
+&vort
+  nx2 = 3002, ny2 = 2002, nz2 = 1002, nb = 8,
+  hx = 0.15, hy = 0.15, hz = 0.15,
+  iv  = 2, 3, 4,                       ! vx, vy, vz の変数番号
+  ibf = 6, 7, 8,                       ! Bx, By, Bz の変数番号
+  diri = './',
+  diro = './',
+  prefix = 'ju03nt', suffix_in = 'm.data', suffix_out = '.vort',
+  ntap = 0, nfiles = 1, nstep = 1, ndigit = 3,
+  ! 出力する量 (.true. の順に変数 1,2,... として書く)
+  out_par = .true., out_perp = .true.,
+  out_wx = .false., out_wy = .false., out_wz = .false., out_wmag = .false.
+/

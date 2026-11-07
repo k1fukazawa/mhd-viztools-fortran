@@ -1,0 +1,43 @@
+! namelist for polar_map : mapping to the polar ionosphere (legacy fig_h/polar: prodp3 + prodpc5 + polar)
+!   computed directly from the combined data (m.data, half domain z>=0); no sdata files needed.
+&polar
+  diri = './',
+  prefix = 'ju03nt', suffix = 'm.data', ntap = 0, nfiles = 1, nstep = 1, ndigit = 3,
+  title_head = 'Bz = 0.105 nT  Dyn = 0.01 nPa  t =', t0 = 427.5, dt = 2.5, t_unit = ' hours',
+  header = 'High resolution of Jovian Magnetosphere',
+  ! grid of the data (m.data)
+  nx2 = 3002, ny2 = 2002, nz2 = 1002, nvar = 8, nxp = 500, h = 0.15,
+  half_domain = .true.,          ! z>=0 only. .false. for full-domain data such as the legacy sdata
+  ! physical parameters (same as constants.f90 of the MHD code)
+  b0 = -1.0, r_in = 7.0, omega = 1.38e-4,
+  subtract_corot = .true.,       ! subtract rigid corotation from the convection (.false.: total velocity)
+  r_map = 10.0,                  ! mapped from the sphere of this radius to the ionosphere along the dipole
+  r_valid = 8.0,
+  ! ionospheric grid and plots
+  hemisphere = 'south',          ! 'north' / 'south' (identical by mirroring for half-domain data)
+  colat_max = 20.0, ncolat = 80, nmlt = 96,
+  ! field-line tracing (open-closed boundary, energy flux proxy)
+  do_trace = .true., stride = 3, trace_maxlen = 5000.0,
+  ! colour ranges (0: automatic). Units of the units group: j [uA/m^2], eflux [mW/m^2], umax [km/s]
+  sigma_p = 1.0,                 ! uniform Pedersen conductance for j_conv [S]
+  jmhd_max = 0.0, jconv_max = 0.0, eflux_max = 0.0, umax = 0.0,
+  psfile = 'polar_ju03nt.ps', ps_per_file = .false.
+/
+
+! ---- physical units (common to all tools, mhdunits). Colour ranges etc. are given in these units
+!   n [cm^-3], v [km/s], p [nPa], B [nT], T [eV], J [uA/m^2], phi [kV], omega [1/s]
+!   phys_units = .false. keeps normalized values (same as the legacy tools)
+&units
+  phys_units = .true.,
+  planet = 'jupiter',            ! 'jupiter' / 'saturn' / 'earth' / 'custom'
+  !   the normalization constants of each planet's MHD code are built in (distance unit RJ / RS / RE)
+  !   jupiter: ns=1e10, bs=4.2e-4, xs=7.14e7,  vs=9.167e7, ts=0.779, ps=0.1403
+  !   saturn : ns=1e10, bs=2.0e-5, xs=6.004e7, vs=4.359e6, ts=13.77, ps=3.185e-4
+  !   earth  : ns=1e10, bs=3.12e-5, xs=6.378e6, vs=6.80e6, ts=0.937, ps=7.75e-4
+  ! to change them: give the basic quantities (number density [m^-3], equatorial surface field [T],
+  !   planetary radius [m], ion mass [amu]); vs, ts, ps, temps are computed. Derived values given are used as is
+  ! ns = 1.0e10, bs = 4.2e-4, xs = 7.14e7, ion_mass = 1.0,
+  ! rhos = 1.67e-17, vs = 9.167e7, ts = 0.779, ps = 0.1403, temps = 8.76e7,
+  ! length_unit = 'RJ',          ! distance unit of the plots
+  temp_unit = 'eV'               ! 'eV', 'keV', 'K'
+/
